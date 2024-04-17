@@ -1,5 +1,5 @@
 import copy
-
+# Usar deepcopy para clonar
 class Teacher:
   def __init__(self, name: str):
     self.name = name
@@ -308,3 +308,6 @@ class Calendar:
       group = self.dict_groups[group_name]
       # Comprueba que cada grupo recibió la cant de clases acordadas
       group.check_all_ok()
+
+
+
