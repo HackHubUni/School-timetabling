@@ -1,3 +1,5 @@
+import copy
+
 class Teacher:
   def __init__(self, name: str):
     self.name = name
@@ -21,8 +23,8 @@ class Subject:
         None
     """
     self.name = name
-    self.list_possibles_groups: list[str] = list_possibles_groups
-    self.dict_teachers: dict[str:Teacher] = dict_possibles_teachers
+    self.list_possibles_groups: list[str] = copy.deepcopy(list_possibles_groups)
+    self.dict_teachers: dict[str:Teacher] = copy.deepcopy(dict_possibles_teachers)
     self.groups_now: set[str] = set()
     self.unknown: Teacher = UnknownTeacher()
     self.teacher: Teacher = self.unknown
@@ -37,7 +39,7 @@ class Subject:
       raise Exception(f"La asignatura {self.name} no es {subject_name}")
     if not (isinstance(self.teacher, UnknownTeacher) or self.teacher_name == teacher_name):
       raise Exception(
-        f"El profesor {teacher_name} no es el que esta impartiendo ahora la asignatura {self.teacher_name} ")
+        f"El profesor {teacher_name} no es el que esta impartiendo ahora la asignatura {self.name} la imparte {self.teacher_name} ")
     # Si el profe es unknown cambiar el profe por el actual
     if isinstance(self.teacher, UnknownTeacher):
       if not teacher_name in self.dict_teachers:
@@ -68,7 +70,7 @@ class Classroom:
     """
     self.name = name
     self.unknown = UnknownSubject()
-    self.possibles_subjects: dict[str:Subject] = dict_subjects
+    self.possibles_subjects: dict[str:Subject] = copy.deepcopy(dict_subjects)
     self.subject: Subject = self.unknown
     self._subject_name = None
 
@@ -99,11 +101,11 @@ class Shifts:
     """
     self.name: str = name
     self.day: str = day
-    self.classrooms_name: list[str] = classrooms_name
+    self.classrooms_name: list[str] = copy.deepcopy(classrooms_name)
     self.classrooms: dict[str:Classroom] = {}
     # Instance las aulas posibles para ese turno
     for item in self.classrooms_name:
-      self.classrooms[item] = Classroom(item, dict_subjects)
+      self.classrooms[item] = Classroom(item, copy.deepcopy(dict_subjects))
     self.teacher_by_subject: dict[str, str] = {}
     """Diccionario que a cada nombre de profesor le asigna una materia a dar
     esto es para comprobar que un profe en un turno no de más de 1 clase a la vez"""
@@ -132,7 +134,7 @@ class Shifts:
 class Group:
   def __init__(self, name, subjects_by_time: dict[str, int]):
     self.name = name
-    self.subjects_by_time: dict[str, int] = subjects_by_time
+    self.subjects_by_time: dict[str, int] = copy.deepcopy(subjects_by_time)
     self.count_now_subjects_by_time: dict[str, int] = {}
     # Inicializa lo que tengo de tiempo real hasta ahora en 0
     for subject_name in self.subjects_by_time.keys():
@@ -183,7 +185,7 @@ class Calendar:
       # El diccionario que tiene como llave el nombre de la asignatura y como valor el tiempo que debe impartirse
       # esta en una semana
       dictionary: dict[str:int] = self.group_by_assign_by_week_time[group_name]
-      group = Group(group_name, dictionary)
+      group = Group(group_name, copy.deepcopy(dictionary))
       self.dict_groups[group_name] = group
       # Ahora añadir en la asignatura que este es un grupo posible
       list_subjects_name = list(dictionary.keys())
@@ -213,13 +215,13 @@ class Calendar:
     for subject_name in self.subjects_name:
       # Seleccionar los profesores para la materia
       dict_teachers = self.__get_possibles_teacher_by_subject(subject_name)
-      temp = Subject(subject_name, list(self.subject_to_set_possible_groups[subject_name]), dict_teachers)
+      temp = Subject(subject_name, list(copy.deepcopy(self.subject_to_set_possible_groups[subject_name])), copy.deepcopy(dict_teachers))
       self.dict_subjects[subject_name] = temp
 
   def __start_shifts(self):
     for i in range(1, self.days_count + 1):
       for j in range(1, self.shifts_counts + 1):
-        self.shifts[i, j] = Shifts(str(j), str(i), self.classrooms_name, self.dict_subjects)
+        self.shifts[i, j] = Shifts(str(j), str(i), self.classrooms_name, copy.deepcopy(self.dict_subjects))
         # dia , turno
 
   def __start(self):
@@ -282,6 +284,7 @@ class Calendar:
 
   def add(self, group_name: str, classroom_name: str, teacher_name: str, day_name: str, shift_name: str,
           subject_name: str):
+
     day_name = int(day_name)
     shift_name = int(shift_name)
     key = (day_name, shift_name)
