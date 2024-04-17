@@ -106,6 +106,9 @@ def main():
                         calendar.add(grupo,aula,profesor,str(dia),str(turno),asignatura)
                     except Exception as e:
                       raise Exception(f'En {to_print} se lanzo el error: \n { e}')
+
+
+    #Chequea que se cumple la cantidad de horas clases por grupo de alas asignaturas por semana
     calendar.finish()
 if __name__ == "__main__":
     main()

@@ -97,9 +97,9 @@ class Shifts:
     """
     Initialize the Schedule object with the given name, day, list of classroom names, and dictionary of subjects.
     """
-    self.name:str = name
-    self.day:str = day
-    self.classrooms_name:list[str] = classrooms_name
+    self.name: str = name
+    self.day: str = day
+    self.classrooms_name: list[str] = classrooms_name
     self.classrooms: dict[str:Classroom] = {}
     # Instance las aulas posibles para ese turno
     for item in self.classrooms_name:
@@ -143,13 +143,13 @@ class Group:
       raise Exception(f"La asignatura {subject_name} no está definida para el aula {self.name}")
     self.count_now_subjects_by_time[subject_name] += 1
 
-  def check_all_ok(self) -> bool:
+  def check_all_ok(self):
     for subject_name in self.subjects_by_time.keys():
       promise_time = self.subjects_by_time[subject_name]
       real_time = self.count_now_subjects_by_time[subject_name]
       if promise_time != real_time:
-        return False
-    return True
+        raise Exception(
+          f"En el grupo {self.name} la asignatura {subject_name} debería tener {promise_time} hora clase a la semana y tiene {real_time}")
 
 
 class Calendar:
