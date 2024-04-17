@@ -7,7 +7,7 @@ def main():
 
     asignaturas = ["Programación", "AlgrebraCP", ]  # "AlgrebraCP", "Programación"]
     asignaturas_tiempo = {"Programación": 2, "AlgrebraCP": 2}
-    profesores = ["Piad", "Paco"]  # "Paco", "Celia"]
+    profesores = ["Piad", ]  # "Paco", "Celia"]
     aulas = ["1", "2", "3", "Postgrado"]
     grupos = ["C111", "C112", "cvvv"]
     grupo_asignatura_tiempo = {}
@@ -18,31 +18,22 @@ def main():
     dias = [1, 2]
 
     asignaturas_profes = {
-      "Piad": ["Programación"],
+      "Piad": ["Programación","AlgrebraCP"],
       # "Celia": ["AlgebraConf"],
-      "Paco": ["AlgrebraCP"],
+      #"Paco": ["AlgrebraCP"],
 
     }
 
     asignatura_list_profes= {
       "Programación":["Piad"],
       # "Celia": ["AlgebraConf"],
-      "AlgrebraCP":["Paco"]
+      "AlgrebraCP":["Piad"]
 
     }
 
     calendar = Calendar(asignaturas, profesores, asignatura_list_profes,grupo_asignatura_tiempo,len(dias),len(turnos),aulas,grupos )
 
-    # Crear las variables
-    # vars = {}
-    # for profesor in profesores:
-    #    for asignatura in asignaturas_profes[profesor]:
-    #        for aula in aulas:
-    #            for grupo in grupos:
-    #                for turno in turnos:
-    #                    for dia in dias:
-    #                        vars[profesor, asignatura, aula, grupo, turno, dia] = model.NewBoolVar(
-    #                            f'profesor:{profesor},asignatura:{asignatura},aula:{aula},grupo:{grupo},turno:{turno},dia:{dia}')
+
     vars = {}
     for dia in dias:
       for turno in turnos:
@@ -79,6 +70,17 @@ def main():
                 vars[profesor, asignatura, aula, grupo, turno, dia] for grupo in grupos for profesor in profesores
                 for asignatura in asignaturas if asignatura in asignaturas_profes[profesor])
               model.add(s <= 1)
+
+    # Que un profesor puede estar en un aula a la vez
+
+      for dia in dias:
+        for turno in turnos:
+          for profesor in profesores:
+              s = sum(
+                vars[profesor, asignatura, aula, grupo, turno, dia] for grupo in grupos  for aula in aulas
+                for asignatura in asignaturas if asignatura in asignaturas_profes[profesor])
+              model.add(s <= 1)
+
 
     # Crear el solucionador y resolver
     solver = cp_model.CpSolver()
