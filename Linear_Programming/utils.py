@@ -1,15 +1,4 @@
-# import enum
-#
-## Crear una lista de valores
-# valores = ['Unknown']
-#
-## Crear el enumerado de forma dinámica
-# MiEnum = enum.Enum('Tags', valores)
-#
-## Imprimir los valores del enumerado
-# for valor in MiEnum:
-#    print(valor)
-#
+
 
 class Teacher:
   def __init__(self, name: str):
@@ -139,6 +128,7 @@ class Group:
     self.name = name
     self.subjects_by_time: dict[str, int] = subjects_by_time
     self.count_now_subjects_by_time: dict[str, int] = {}
+    #Inicializa lo que tengo de tiempo real hasta ahora en 0
     for subject_name in self.subjects_by_time.keys():
       self.count_now_subjects_by_time[subject_name] = 0
 
@@ -159,9 +149,16 @@ class Group:
 class Calendar:
 
   def add_to_dict_possibles_groups_by_subject(self, group_name: str, list_subjects: list[str]):
+    """
+    Añade al diccionario que tiene como llave el nombre de la asignatura los posibles grupos que pueden recibir esta
+    :param group_name:
+    :param list_subjects:
+    :return:
+    """
     for subject_name in list_subjects:
       if subject_name not in self.subjects_name:
         raise Exception(f"La asignatura {subject_name} no está en {self.subjects_name}")
+      #Comprueba que no se hala guardado ya la asignatura
       if subject_name not in self.subject_to_set_possible_groups:
         my_set = set()
         my_set.add(group_name)
@@ -177,6 +174,8 @@ class Calendar:
     for group_name in self.groups_names:
       if group_name not in self.group_by_assign_by_week_time:
         raise Exception(f"El grupo {group_name} no tiene clases asignadas ")
+      #El diccionario que tiene como llave el nombre de la asignatura y como valor el tiempo que debe impartirse
+      #esta en una semana
       dictionary: dict[str:int] = self.group_by_assign_by_week_time[group_name]
       group = Group(group_name, dictionary)
       self.dict_groups[group_name] = group
@@ -261,15 +260,32 @@ class Calendar:
     self.subject_to_set_possible_groups: dict[str, set[str]] = {}
     self.dict_teachers: dict[str, Teacher] = {}
 
-  def add(self, grupo: str, aula: str, profesor: str, dia: str, turno: str, asignatura: str):
-    dia = int(dia)
-    turno = int(turno)
-    key = (dia, turno)
+  def add_subject_to_group(self,subject_name:str,group_name:str):
+    if group_name not in self.dict_groups:
+      raise Exception(f"El grupo {group_name} no esta definido")
+    if subject_name not in self.dict_subjects:
+      raise Exception(f"La asignatura {subject_name} no está definida")
+
+    # Añadir la asignatura al grupo
+    group=self.dict_groups[group_name]
+    #Se dice que se dio un turno de esta asignatura
+    group.add_subject_shift(subject_name)
+
+  def add(self, group_name:str, classroom_name: str, teacher_name: str, day_name: str, shift: str, subject_name: str):
+    day_name = int(day_name)
+    shift = int(shift)
+    key = (day_name, shift)
     if not key in self.shifts:
       raise Exception("El dia o turno no es válido")
 
     shift = self.shifts[key]
-    shift.add_subject_with_classroom(str(turno), aula, asignatura, grupo)
+    shift.add_subject_with_classroom(str(shift), classroom_name, subject_name, group_name, teacher_name)
+
+    #Añadir al grupo que se dio un turno de la asignatura
+    self.add_subject_to_group(subject_name,group_name)
+
+
+
 
   def finish(self):
     """
