@@ -6,28 +6,28 @@ def main():
   # Crear el modelo
   model = cp_model.CpModel()
 
-  asignaturas = ["Programación", "AlgrebraCP", ]  # "AlgrebraCP", "Programación"]
-  asignaturas_tiempo = {"Programación": 2, "AlgrebraCP": 2}
-  profesores = ["Piad","Paco" ]  # "Paco", "Celia"]
+  asignaturas = ["Programación", "AlgrebraCP","AlgebraConf" ]  # "AlgrebraCP", "Programación"]
+  asignaturas_tiempo = {"Programación": 2, "AlgrebraCP": 2,"AlgebraConf":1}
+  profesores = ["Piad","Paco","Celia" ]  # "Paco", "Celia"]
   aulas = ["1", "2", "3", "Postgrado"]
   grupos = ["C111", "C112", "cvvv"]
   grupo_asignatura_tiempo = {}
   for item in grupos:
     grupo_asignatura_tiempo[item] = asignaturas_tiempo
 
-  turnos = [1, 2]
+  turnos = [1, 2,3]
   dias = [1, 2]
 
   asignaturas_profes = {
     "Piad": ["Programación", "AlgrebraCP"],
-    # "Celia": ["AlgebraConf"],
+     "Celia": ["AlgebraConf"],
      "Paco": ["AlgrebraCP"],
 
   }
 
   asignatura_list_profes = {
     "Programación": ["Piad"],
-    # "Celia": ["AlgebraConf"],
+     "AlgebraConf": ["Celia"],
     "AlgrebraCP": ["Piad","Paco"]
 
   }
