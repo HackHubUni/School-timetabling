@@ -1,5 +1,3 @@
-
-
 class Teacher:
   def __init__(self, name: str):
     self.name = name
@@ -28,7 +26,11 @@ class Subject:
     self.groups_now: set[str] = set()
     self.unknown: Teacher = UnknownTeacher()
     self.teacher: Teacher = self.unknown
-    self.teacher_name = self.teacher.name
+    self._teacher_name = None
+
+  @property
+  def teacher_name(self):
+    return self.teacher.name
 
   def add_group(self, subject_name: str, group_name: str, teacher_name: str):
     if not self.name == subject_name:
@@ -68,7 +70,11 @@ class Classroom:
     self.unknown = UnknownSubject()
     self.possibles_subjects: dict[str:Subject] = dict_subjects
     self.subject: Subject = self.unknown
-    self.subject_name = self.subject.name
+    self._subject_name = None
+
+  @property
+  def subject_name(self):
+    return self.subject.name
 
   def add_subject_in_group_and_career(self, subject_name: str, group_name: str, teacher_name: str):
     # Comprobar que la asignatura sea valida para poner
@@ -91,9 +97,9 @@ class Shifts:
     """
     Initialize the Schedule object with the given name, day, list of classroom names, and dictionary of subjects.
     """
-    self.name = name
-    self.day = day
-    self.classrooms_name = classrooms_name
+    self.name:str = name
+    self.day:str = day
+    self.classrooms_name:list[str] = classrooms_name
     self.classrooms: dict[str:Classroom] = {}
     # Instance las aulas posibles para ese turno
     for item in self.classrooms_name:
@@ -128,7 +134,7 @@ class Group:
     self.name = name
     self.subjects_by_time: dict[str, int] = subjects_by_time
     self.count_now_subjects_by_time: dict[str, int] = {}
-    #Inicializa lo que tengo de tiempo real hasta ahora en 0
+    # Inicializa lo que tengo de tiempo real hasta ahora en 0
     for subject_name in self.subjects_by_time.keys():
       self.count_now_subjects_by_time[subject_name] = 0
 
@@ -148,7 +154,7 @@ class Group:
 
 class Calendar:
 
-  def add_to_dict_possibles_groups_by_subject(self, group_name: str, list_subjects: list[str]):
+  def __add_to_dict_possibles_groups_by_subject(self, group_name: str, list_subjects: list[str]):
     """
     Añade al diccionario que tiene como llave el nombre de la asignatura los posibles grupos que pueden recibir esta
     :param group_name:
@@ -158,7 +164,7 @@ class Calendar:
     for subject_name in list_subjects:
       if subject_name not in self.subjects_name:
         raise Exception(f"La asignatura {subject_name} no está en {self.subjects_name}")
-      #Comprueba que no se hala guardado ya la asignatura
+      # Comprueba que no se hala guardado ya la asignatura
       if subject_name not in self.subject_to_set_possible_groups:
         my_set = set()
         my_set.add(group_name)
@@ -166,24 +172,24 @@ class Calendar:
       else:
         self.subject_to_set_possible_groups[subject_name].add(group_name)
 
-  def start_teachers(self):
+  def __start_teachers(self):
     for teachers_name in self.teachers_name:
       self.dict_teachers[teachers_name] = Teacher(teachers_name)
 
-  def start_groups(self):
+  def __start_groups(self):
     for group_name in self.groups_names:
       if group_name not in self.group_by_assign_by_week_time:
         raise Exception(f"El grupo {group_name} no tiene clases asignadas ")
-      #El diccionario que tiene como llave el nombre de la asignatura y como valor el tiempo que debe impartirse
-      #esta en una semana
+      # El diccionario que tiene como llave el nombre de la asignatura y como valor el tiempo que debe impartirse
+      # esta en una semana
       dictionary: dict[str:int] = self.group_by_assign_by_week_time[group_name]
       group = Group(group_name, dictionary)
       self.dict_groups[group_name] = group
       # Ahora añadir en la asignatura que este es un grupo posible
       list_subjects_name = list(dictionary.keys())
-      self.add_to_dict_possibles_groups_by_subject(group_name, list_subjects_name)
+      self.__add_to_dict_possibles_groups_by_subject(group_name, list_subjects_name)
 
-  def get_possibles_teacher_by_subject(self, subject_name: str) -> dict[str, Teacher]:
+  def __get_possibles_teacher_by_subject(self, subject_name: str) -> dict[str, Teacher]:
     """
     Dado un nombre de materia devuelve un diccionario que tiene el nombre del profesor y el profesor
 
@@ -203,24 +209,24 @@ class Calendar:
       raise Exception(f"Se debe asignar al menos un profesor a la asignatura {subject_name}")
     return res
 
-  def start_subjects(self):
+  def __start_subjects(self):
     for subject_name in self.subjects_name:
       # Seleccionar los profesores para la materia
-      dict_teachers = self.get_possibles_teacher_by_subject(subject_name)
+      dict_teachers = self.__get_possibles_teacher_by_subject(subject_name)
       temp = Subject(subject_name, list(self.subject_to_set_possible_groups[subject_name]), dict_teachers)
       self.dict_subjects[subject_name] = temp
 
-  def start_shifts(self):
+  def __start_shifts(self):
     for i in range(1, self.days_count + 1):
       for j in range(1, self.shifts_counts + 1):
         self.shifts[i, j] = Shifts(str(j), str(i), self.classrooms_name, self.dict_subjects)
         # dia , turno
 
-  def start(self):
-    self.start_groups()
-    self.start_teachers()
-    self.start_subjects()
-    self.start_shifts()
+  def __start(self):
+    self.__start_groups()
+    self.__start_teachers()
+    self.__start_subjects()
+    self.__start_shifts()
 
   def __init__(self, subjects_name: list[str], teachers_name: list[str],
                possibles_teacher_by_subject: dict[str, list[str]],
@@ -260,32 +266,34 @@ class Calendar:
     self.subject_to_set_possible_groups: dict[str, set[str]] = {}
     self.dict_teachers: dict[str, Teacher] = {}
 
-  def add_subject_to_group(self,subject_name:str,group_name:str):
+    # Llamar el start para inicialiazar los dict
+    self.__start()
+
+  def __add_subject_to_group(self, subject_name: str, group_name: str):
     if group_name not in self.dict_groups:
       raise Exception(f"El grupo {group_name} no esta definido")
     if subject_name not in self.dict_subjects:
       raise Exception(f"La asignatura {subject_name} no está definida")
 
     # Añadir la asignatura al grupo
-    group=self.dict_groups[group_name]
-    #Se dice que se dio un turno de esta asignatura
+    group = self.dict_groups[group_name]
+    # Se dice que se dio un turno de esta asignatura
     group.add_subject_shift(subject_name)
 
-  def add(self, group_name:str, classroom_name: str, teacher_name: str, day_name: str, shift: str, subject_name: str):
+  def add(self, group_name: str, classroom_name: str, teacher_name: str, day_name: str, shift_name: str,
+          subject_name: str):
     day_name = int(day_name)
-    shift = int(shift)
-    key = (day_name, shift)
+    shift_name = int(shift_name)
+    key = (day_name, shift_name)
     if not key in self.shifts:
       raise Exception("El dia o turno no es válido")
 
     shift = self.shifts[key]
-    shift.add_subject_with_classroom(str(shift), classroom_name, subject_name, group_name, teacher_name)
 
-    #Añadir al grupo que se dio un turno de la asignatura
-    self.add_subject_to_group(subject_name,group_name)
+    shift.add_subject_with_classroom(str(shift_name), classroom_name, subject_name, group_name, teacher_name)
 
-
-
+    # Añadir al grupo que se dio un turno de la asignatura
+    self.__add_subject_to_group(subject_name, group_name)
 
   def finish(self):
     """
