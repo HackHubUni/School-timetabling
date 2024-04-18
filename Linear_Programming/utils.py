@@ -106,6 +106,9 @@ class Shifts:
     # Instance las aulas posibles para ese turno
     for item in self.classrooms_name:
       self.classrooms[item] = Classroom(item, copy.deepcopy(dict_subjects))
+
+    self.teacher_classroom: dict[str, str] = {}
+    """Diccionario para que a cada profesor se le asigna una única aula """
     self.teacher_by_subject: dict[str, str] = {}
     """Diccionario que a cada nombre de profesor le asigna una materia a dar
     esto es para comprobar que un profe en un turno no de más de 1 clase a la vez"""
@@ -119,10 +122,19 @@ class Shifts:
     if not classroom_name in self.classrooms:
       raise Exception(f'El aula {classroom_name} no está en este turno')
 
+    #Comprobar que el profesor esta asignado al aula que se quiere
+    if teacher_name in self.teacher_classroom and self.teacher_classroom[teacher_name]!=classroom_name:
+      raise Exception(f'El profesor {teacher_name} está asignado al aula {self.teacher_classroom[teacher_name]} no pude ser asignado al aula {classroom_name} ')
+    elif teacher_name not in self.teacher_classroom:
+      self.teacher_classroom[teacher_name]=classroom_name
+
+
     # Comprobar que el profesor o no está asignado a ninguna materia o da la misma materia a asignar
     if teacher_name in self.teacher_by_subject and self.teacher_by_subject[teacher_name] != subject_name:
       raise Exception(
         f"El profesor {teacher_name} imparte la clase: {self.teacher_by_subject[teacher_name]} no la clase: {subject_name} ")
+
+
     # Si no esta en el diccionario añadirlo
     if teacher_name not in self.teacher_by_subject:
       self.teacher_by_subject[teacher_name] = subject_name
