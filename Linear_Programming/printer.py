@@ -1,6 +1,14 @@
 import pandas as pd
 from pandas import DataFrame
 
+def to_data_frame(data):
+
+  # Crear un DataFrame a partir de la lista
+  df = pd.DataFrame(data)
+  return df
+  # Mostrar el DataFrame
+  #print(df)
+
 
 def to_excel(df:DataFrame):
   # Asumiendo que 'Profesor', 'Asignatura' y 'Aula' son otras columnas en tu DataFrame que quieres incluir

@@ -1,5 +1,5 @@
 from enum import Enum
-from Linear_Programming.solver import solver
+from Linear_Programming.solver import TimeTablingSolver
 from Linear_Programming.printer import to_excel
 
 class Subjects(Enum):
@@ -120,8 +120,9 @@ def main():
 
   dict_teachers_to_subjects = {str(x):[str(y)for y in dict_teachers_to_subjects[x]] for x in dict_teachers_to_subjects.keys()}
 
-  df=solver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
+  solver=TimeTablingSolver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
          dict_group_subject_time, shifts, days, dict_teachers_to_subjects)
+  df=solver.solve()
 
   to_excel(df)
   # Asumiendo que df es tu DataFrame y que 'Dia', 'Espacio' y 'Grupo' son columnas en df
