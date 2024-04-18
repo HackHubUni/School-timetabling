@@ -1,4 +1,6 @@
 import copy
+
+
 # Usar deepcopy para clonar
 class Teacher:
   def __init__(self, name: str):
@@ -37,9 +39,7 @@ class Subject:
   def add_group(self, subject_name: str, group_name: str, teacher_name: str):
     if not self.name == subject_name:
       raise Exception(f"La asignatura {self.name} no es {subject_name}")
-    #if not (isinstance(self.teachers[0], UnknownTeacher) or teacher_name in self.teacher_name):
-    #  raise Exception(
-    #    f"El profesor {teacher_name} no es el que esta impartiendo ahora la asignatura {self.name} la imparte {self.teacher_name} ")
+
     # Si el profe es unknown cambiar el profe por el actual
     if isinstance(self.teachers[0], UnknownTeacher):
       if not teacher_name in self.dict_teachers:
@@ -73,7 +73,7 @@ class Classroom:
     self.possibles_subjects: dict[str:Subject] = copy.deepcopy(dict_subjects)
     self.subject: Subject = self.unknown
     self._subject_name = None
-    self.groups:set[str]=set()
+    self.groups: set[str] = set()
 
   @property
   def subject_name(self):
@@ -95,7 +95,7 @@ class Classroom:
       # Sea asigna la materia a dar
       self.subject: Subject = self.possibles_subjects[subject_name]
 
-    #Añadir el grupo al set de grupos
+    # Añadir el grupo al set de grupos
     self.groups.add(group_name)
 
     # Añadir el grupo a la materia
@@ -130,18 +130,17 @@ class Shifts:
     if not classroom_name in self.classrooms:
       raise Exception(f'El aula {classroom_name} no está en este turno')
 
-    #Comprobar que el profesor esta asignado al aula que se quiere
-    if teacher_name in self.teacher_classroom and self.teacher_classroom[teacher_name]!=classroom_name:
-      raise Exception(f'El profesor {teacher_name} está asignado al aula {self.teacher_classroom[teacher_name]} no pude ser asignado al aula {classroom_name} ')
+    # Comprobar que el profesor esta asignado al aula que se quiere
+    if teacher_name in self.teacher_classroom and self.teacher_classroom[teacher_name] != classroom_name:
+      raise Exception(
+        f'El profesor {teacher_name} está asignado al aula {self.teacher_classroom[teacher_name]} no pude ser asignado al aula {classroom_name} ')
     elif teacher_name not in self.teacher_classroom:
-      self.teacher_classroom[teacher_name]=classroom_name
-
+      self.teacher_classroom[teacher_name] = classroom_name
 
     # Comprobar que el profesor o no está asignado a ninguna materia o da la misma materia a asignar
     if teacher_name in self.teacher_by_subject and self.teacher_by_subject[teacher_name] != subject_name:
       raise Exception(
         f"El profesor {teacher_name} imparte la clase: {self.teacher_by_subject[teacher_name]} no la clase: {subject_name} ")
-
 
     # Si no esta en el diccionario añadirlo
     if teacher_name not in self.teacher_by_subject:
@@ -235,7 +234,8 @@ class Calendar:
     for subject_name in self.subjects_name:
       # Seleccionar los profesores para la materia
       dict_teachers = self.__get_possibles_teacher_by_subject(subject_name)
-      temp = Subject(subject_name, list(copy.deepcopy(self.subject_to_set_possible_groups[subject_name])), copy.deepcopy(dict_teachers))
+      temp = Subject(subject_name, list(copy.deepcopy(self.subject_to_set_possible_groups[subject_name])),
+                     copy.deepcopy(dict_teachers))
       self.dict_subjects[subject_name] = temp
 
   def __start_shifts(self):
@@ -328,6 +328,3 @@ class Calendar:
       group = self.dict_groups[group_name]
       # Comprueba que cada grupo recibió la cant de clases acordadas
       group.check_all_ok()
-
-
-
