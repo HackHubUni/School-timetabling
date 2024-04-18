@@ -38,7 +38,7 @@ class Teachers(Enum):
 
 
 from Linear_Programming.solver import solver
-
+import pandas as pd
 
 def main():
   subjects_name_list = [Subjects.Programacion,
@@ -119,9 +119,10 @@ def main():
 
   dict_teachers_to_subjects = {str(x):[str(y)for y in dict_teachers_to_subjects[x]] for x in dict_teachers_to_subjects.keys()}
 
-  solver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
+  df=solver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
          dict_group_subject_time, shifts, days, dict_teachers_to_subjects)
 
 
+  print(resultado)
 if __name__ == "__main__":
   main()

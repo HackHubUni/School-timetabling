@@ -2,6 +2,25 @@ from ortools.constraint_solver.pywrapcp import IntVar
 from ortools.sat.python import cp_model
 from Linear_Programming.utils import Calendar
 
+import pandas as pd
+
+def _to_data_frame(teacher,subject,classroom,group,shift,day):
+  data=[]
+  # Agregar los datos a la lista como un diccionario
+  data.append({
+    'Teacher': teacher,
+    'Subject': subject,
+    'Classroom': classroom,
+    'Group': group,
+    'Shift': shift,
+    'Day': day
+  })
+  # Crear un DataFrame a partir de la lista
+  df = pd.DataFrame(data)
+  return df
+  # Mostrar el DataFrame
+  #print(df)
+
 
 def _get_dic_subjects_to_teachers(teachers: list[str], subjects: list[str],
                                   dict_teachers_to_subjects: dict[str, list[str]]) -> dict[str, list[str]]:
@@ -80,16 +99,16 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
                 )
         model.add(s <= 1)
 
-  #Que siempre se den todos los turnos de las asignaturas en cada grupo
+  # Que siempre se den todos los turnos de las asignaturas en cada grupo
   for asignatura in subjects_name_list:
-   for grupo in groups_names:
-     s = sum(
-       variables[profesor, asignatura, aula, grupo, turno, dia] for profesor in teachers_names for aula in
-       classrooms_names
-       for turno in shifts for dia in days if asignatura in dict_teachers_to_subjects[profesor])
-     model.add(s == dict_subjects_by_time[asignatura])
+    for grupo in groups_names:
+      s = sum(
+        variables[profesor, asignatura, aula, grupo, turno, dia] for profesor in teachers_names for aula in
+        classrooms_names
+        for turno in shifts for dia in days if asignatura in dict_teachers_to_subjects[profesor])
+      model.add(s == dict_subjects_by_time[asignatura])
 
-  #Aca son el and digo que para todos los grupos deben darse todos los turnos pero deben de satisfacer que un profe debe estar en un solo aula
+  # Aca son el and digo que para todos los grupos deben darse todos los turnos pero deben de satisfacer que un profe debe estar en un solo aula
   for asignatura in subjects_name_list:
     for grupo in groups_names:
       for profesor in teachers_names:
@@ -98,7 +117,8 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
             for dia in days:
               if asignatura in dict_teachers_to_subjects[profesor]:
                 model.AddBoolAnd([variables[profesor, asignatura, aula, grupo, turno, dia],
-                                  variables_aux[dia, turno, profesor, aula]]).OnlyEnforceIf( #el onlyEnforceIf asegura que ese and sea verdadero tal que se cumpla el el anterior
+                                  variables_aux[dia, turno, profesor, aula]]).OnlyEnforceIf(
+                  # el onlyEnforceIf asegura que ese and sea verdadero tal que se cumpla el el anterior
                   variables[profesor, asignatura, aula, grupo, turno, dia])
   # Que un grupo pueda estar en un turno en una sola aula
   for dia in days:
@@ -110,20 +130,40 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
                 if asignatura in dict_teachers_to_subjects[profesor])
         model.add(s <= 1)
 
-  # Solo se puede asignar a un aula una materia un dia x
-  #Crear variables para esto
+   #Solo se puede asignar a un aula una materia un dia x
+   #Crear variables para esto
+  one_s_vars = {}
+  for day in days:
+    for shift in shifts:
+      for subject in subjects_name_list:
+        for classroom in classrooms_names:
+          one_s_vars[day, shift, subject, classroom] = model.NewBoolVar(
+            f'Variable auxiliar: aula:{classroom},asignatura:{subject},turno:{shift},dia:{day}   '
+          )
+
+  # Que en un turno de un dia x en un aula solo se puede dar una materia
+  for day in days:
+      for shift in shifts:
+          for classroom in classrooms_names:
+           s=sum(one_s_vars[day, shift, subject, classroom]
+                  for subject in subjects_name_list
+                  )
+           model.add(s<=1)
 
 
+ #Aca se le hace el and para que se asegura que solo se puede tener una materia en un turno por aula
+  for subject in subjects_name_list:
+    for group in groups_names:
+      for teacher in teachers_names:
+        for classroom in classrooms_names:
+          for shift in shifts:
+            for day in days:
+              if subject in dict_teachers_to_subjects[teacher]:
+                model.AddBoolAnd([variables[teacher, subject, classroom, group, shift, day],
+                                  one_s_vars[day, shift, subject, classroom]]).OnlyEnforceIf(
+                  # el onlyEnforceIf asegura que ese and sea verdadero tal que se cumpla el el anterior
 
-  for aula in classrooms_names:
-    for dia in days:
-      for turno in shifts:
-        s = sum(
-          variables[profesor, asignatura, aula, grupo, turno, dia] for grupo in groups_names for profesor in
-          teachers_names
-          for asignatura in subjects_name_list if asignatura in dict_teachers_to_subjects[profesor])
-        model.add(s <= 1)
-
+                 variables[teacher, subject, classroom, group, shift, day])
 
 
   # Crear el solucionador y resolver
@@ -137,7 +177,7 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
     print("Número de nodos explorados:", solver.NumBranches())
     print("Tiempo de ejecución:", solver.WallTime())
     return
-
+  df=None
   if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
     for profesor in teachers_names:
       for asignatura in dict_teachers_to_subjects[profesor]:
@@ -148,7 +188,8 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
                 if solver.value(variables[profesor, asignatura, aula, grupo, turno, dia]) == 1:
                   to_print = f'profesor:{profesor},asignatura:{asignatura},aula:{aula},grupo:{grupo},turno:{turno},dia:{dia}'
                   print(to_print)
-                  if False:
+                  df=_to_data_frame(profesor,asignatura,aula,grupo,turno,dia)
+                  if True:
                     calendar.add(grupo, aula, profesor, str(dia), str(turno), asignatura)
                   else:
                     try:
@@ -158,3 +199,5 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
 
   # Chequea que se cumple la cantidad de horas clases por grupo de alas asignaturas por semana
   calendar.finish()
+  return df
+

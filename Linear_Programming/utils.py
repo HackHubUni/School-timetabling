@@ -27,24 +27,24 @@ class Subject:
     self.dict_teachers: dict[str:Teacher] = copy.deepcopy(dict_possibles_teachers)
     self.groups_now: set[str] = set()
     self.unknown: Teacher = UnknownTeacher()
-    self.teacher: Teacher = self.unknown
+    self.teachers: list[Teacher] = [self.unknown]
     self._teacher_name = None
 
   @property
   def teacher_name(self):
-    return self.teacher.name
+    return [x.name for x in self.teachers]
 
   def add_group(self, subject_name: str, group_name: str, teacher_name: str):
     if not self.name == subject_name:
       raise Exception(f"La asignatura {self.name} no es {subject_name}")
-    if not (isinstance(self.teacher, UnknownTeacher) or self.teacher_name == teacher_name):
-      raise Exception(
-        f"El profesor {teacher_name} no es el que esta impartiendo ahora la asignatura {self.name} la imparte {self.teacher_name} ")
+    #if not (isinstance(self.teachers[0], UnknownTeacher) or teacher_name in self.teacher_name):
+    #  raise Exception(
+    #    f"El profesor {teacher_name} no es el que esta impartiendo ahora la asignatura {self.name} la imparte {self.teacher_name} ")
     # Si el profe es unknown cambiar el profe por el actual
-    if isinstance(self.teacher, UnknownTeacher):
+    if isinstance(self.teachers[0], UnknownTeacher):
       if not teacher_name in self.dict_teachers:
         raise Exception(f"El profesor {teacher_name} no esta declarado para dar la asignatura {self.name}")
-      self.teacher = self.dict_teachers[teacher_name]
+      self.teachers = [self.dict_teachers[teacher_name]]
 
     if not group_name in self.list_possibles_groups:
       raise Exception(f"El grupo {group_name} no está entre los posibles grupos {self.list_possibles_groups}")
@@ -73,10 +73,15 @@ class Classroom:
     self.possibles_subjects: dict[str:Subject] = copy.deepcopy(dict_subjects)
     self.subject: Subject = self.unknown
     self._subject_name = None
+    self.groups:set[str]=set()
 
   @property
   def subject_name(self):
     return self.subject.name
+
+  @property
+  def groups_count(self):
+    return len(self.groups)
 
   def add_subject_in_group_and_career(self, subject_name: str, group_name: str, teacher_name: str):
     # Comprobar que la asignatura sea valida para poner
@@ -89,6 +94,9 @@ class Classroom:
         raise Exception(f"La asignatura {subject_name} no es posible darla en el aula {self.name}")
       # Sea asigna la materia a dar
       self.subject: Subject = self.possibles_subjects[subject_name]
+
+    #Añadir el grupo al set de grupos
+    self.groups.add(group_name)
 
     # Añadir el grupo a la materia
     self.subject.add_group(subject_name, group_name, teacher_name)
