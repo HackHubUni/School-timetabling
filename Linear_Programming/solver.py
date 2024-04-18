@@ -46,7 +46,6 @@ class ClassroomRestriction(TimeTablingSolverBase):
 
     self.start()
 
-
   def start(self):
     self.create_vars()
     self.vars_natural_restriction()
@@ -137,6 +136,19 @@ class TeacherRestriction(TimeTablingSolverBase):
           self.model.add(s <= 1)
 
 
+class OptionalRestrictions(TimeTablingSolverBase):
+  def __init__(self, subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], teachers_names: list[str],
+               classrooms_names: list[str],
+               groups_names: list[str], dict_group_subject_time: dict[str, dict[str:int]], shifts: list[int],
+               days: list[int], dict_teachers_to_subjects: dict[str, list[str]], model: CpModel):
+    super().__init__(subjects_name_list, dict_subjects_by_time, teachers_names,
+                     classrooms_names,
+                     groups_names, dict_group_subject_time, shifts,
+                     days, dict_teachers_to_subjects)
+
+    self.model = model
+
+
 class TimeTablingSolver(TimeTablingSolverBase):
 
   def _list_para_dataframe(self, teacher, subject, classroom, group, shift, day) -> list[dict]:
@@ -224,6 +236,8 @@ class TimeTablingSolver(TimeTablingSolverBase):
 
     self.start_hard_restrictions()
 
+    # A las de teste
+
   def start_hard_restrictions(self):
     """
     Inicializa las restricciones hard
@@ -252,6 +266,12 @@ class TimeTablingSolver(TimeTablingSolverBase):
               for teacher in self.teachers_names:
                 self.vars[teacher, subject, classroom, group, shift, day] = self.model.NewBoolVar(
                   f'profesor:{teacher},asignatura:{subject},aula:{classroom},grupo:{group},turno:{shift},dia:{day}')
+
+  def get_var(self, teacher_name: str, subject_name: str, classroom_name: str, group_name: str, shift_int: int,
+              day_int: int):
+    if not (isinstance(shift_int, int) and isinstance(day_int, int)):
+      raise Exception(f"El turno:{type(shift_int)} o el dia:{type(day_int)} no se ha dado como entero")
+    return self.vars[teacher_name, subject_name, classroom_name, group_name, shift_int, day_int]
 
   def _global_hard_restrictions(self):
     """
@@ -354,3 +374,79 @@ class TimeTablingSolver(TimeTablingSolverBase):
     # Chequea que se cumple la cantidad de horas clases por grupo de a las asignaturas por semana
     self.calendar.finish()
     return to_data_frame(lis)
+
+  def _create_sum_for_optional_hard_restriction(self, teachers_name: list[str], subjects_name: list[str],
+                                                classrooms_name: list[str], groups_name: list[str]
+                                                , shifts_int: list[int], days_int: list[int]):
+    """Crea la sumatoria de las combinaciones
+     de las listas que se le pasan para que despues se puedan asignar
+      si se debe cumplir la restriccion s==1 o no s==0"""
+
+    s = sum(self.get_var(teacher_name, subject_name, classroom_name, group_name, shift_int, day_int)
+            for teacher_name in teachers_name for subject_name in subjects_name for classroom_name in classrooms_name
+            for group_name in groups_name for shift_int in shifts_int for day_int in days_int
+            if subject_name in self.dict_teachers_to_subjects[teacher_name])
+
+    return s
+
+  def add_optional_hard_constraints(self, teachers_name: list[str], subjects_name: list[str],
+                                    classrooms_name: list[str], groups_name: list[str]
+                                    , shifts_int: list[int], days_int: list[int], count_to_be_equals: int):
+    """Se da una lista de anterior que tiene añade una condición hard que la
+     combinatoria de lo que está en las listas suma el count_to_be_equals osea se tiene que cumplir
+     OJO:Peligroso de usar se recomienda usar el add_False_hard_constraints para si se quiere restringir o el
+     add_True_hard_constraints si se quiere obligar a que suceda
+     """
+
+    s = self._create_sum_for_optional_hard_restriction(teachers_name, subjects_name, classrooms_name, groups_name,
+                                                       shifts_int, days_int)
+    self.model.add(s == count_to_be_equals)
+
+  def add_False_hard_constraints(self, teachers_name: list[str], subjects_name: list[str],
+                                 classrooms_name: list[str], groups_name: list[str]
+                                 , shifts_int: list[int], days_int: list[int]):
+    """Se da una lista de anterior que tiene añade una condición hard que la
+     combinatoria de lo que está en las listas suma 0 osea se tiene que cumplir"""
+
+    self.add_optional_hard_constraints(teachers_name, subjects_name, classrooms_name, groups_name,
+                                       shifts_int, days_int, 0)
+
+  def add_True_hard_constraints(self, teachers_name: list[str], subjects_name: list[str],
+                                classrooms_name: list[str], groups_name: list[str]
+                                , shifts_int: list[int], days_int: list[int]):
+    """Se da una lista de anterior que tiene añade una condición hard que la
+     combinatoria de lo que está en las listas suma 1 osea se tiene que cumplir"""
+
+    self.add_optional_hard_constraints(teachers_name, subjects_name, classrooms_name, groups_name,
+                                       shifts_int, days_int, 1)
+
+  def add_Maximize_soft_constraints(self, teachers_name: list[str], subjects_name: list[str],
+                                    classrooms_name: list[str], groups_name: list[str]
+                                    , shifts_int: list[int], days_int: list[int], alpha_value: int):
+    if alpha_value <= 0:
+      raise Exception(f"El alpha_value debe ser estrictamente positivo y es {alpha_value}")
+    """
+    Agrega una condición suave osea que trata de optimizar para que se cumpla
+    Al maximizar un valor positivo da prioridad a este que se cumpla
+    """
+
+    s = self._create_sum_for_optional_hard_restriction(teachers_name, subjects_name, classrooms_name, groups_name,
+                                                       shifts_int, days_int)
+
+    self.model.Maximize(alpha_value * s)
+
+  def add_Minimize_soft_constraints(self, teachers_name: list[str], subjects_name: list[str],
+                                    classrooms_name: list[str], groups_name: list[str]
+                                    , shifts_int: list[int], days_int: list[int], alpha_value: int):
+    """
+        Agrega una condición suave osea que trata de optimizar para que se cumpla
+        Al minimizar un valor positivo da prioridad a este que no se cumpla o se cumpla lo menor posible
+        """
+
+    if alpha_value <= 0:
+      raise Exception(f"El alpha_value debe ser estrictamente positivo y es {alpha_value}")
+
+    s = self._create_sum_for_optional_hard_restriction(teachers_name, subjects_name, classrooms_name, groups_name,
+                                                       shifts_int, days_int)
+
+    self.model.Minimize(alpha_value * s)

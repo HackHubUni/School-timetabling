@@ -173,7 +173,40 @@ class Group:
           f"En el grupo {self.name} la asignatura {subject_name} debería tener {promise_time} hora clase a la semana y tiene {real_time}")
 
 
-class Calendar:
+class CalendarBase:
+  def __init__(self, subjects_name: list[str], teachers_name: list[str],
+               possibles_teacher_by_subject: dict[str, list[str]],
+               group_by_assign_by_week_time: dict[str, dict[str, int]],
+               days_count=5, shifts_count=3,
+               classroom_names: list[str] = ["1", "2", "postgrado"], groups_names: list[str] = ["C111", "C112"]):
+
+    """
+    Initialize the Scheduler object with the provided parameters.
+
+    Parameters:
+    - subjects_name: list of str, names of the subjects
+    - teachers_name: list of str, names of the teachers
+    - possibles_teacher_by_subject: dict[str, str], mapea una materia y da una lista de posibles profesores
+    - group_by_assign_by_week_time: dict[str, dict[str, int]], tiene los grupos como key y en las llaves las asignaturas con su nombre y time
+    - days_count: int, number of days in a week (default is 5)
+    - shifts_count: int, number of shifts in a day (default is 3)
+    - classroom_names: list of str, names of the classrooms (default is ["1", "2", "postgrado"])
+    - groups_names: list of str, names of the groups (default is ["C111", "C112"])
+
+    Returns:
+    - None
+    """
+    self.days_count = days_count
+    self.shifts_counts = shifts_count
+    self.subjects_name: list[str] = subjects_name
+    self.teachers_name: list[str] = teachers_name
+    self.possibles_teacher_by_subject: dict[str, list[str]] = possibles_teacher_by_subject
+    self.classrooms_name = classroom_names
+    self.groups_names = groups_names
+    self.group_by_assign_by_week_time: dict[str:list[tuple[str, int]]] = group_by_assign_by_week_time
+
+
+class Calendar(CalendarBase):
 
   def __add_to_dict_possibles_groups_by_subject(self, group_name: str, list_subjects: list[str]):
     """
@@ -272,14 +305,7 @@ class Calendar:
     Returns:
     - None
     """
-    self.days_count = days_count
-    self.shifts_counts = shifts_count
-    self.subjects_name: list[str] = subjects_name
-    self.teachers_name: list[str] = teachers_name
-    self.possibles_teacher_by_subject: dict[str, list[str]] = possibles_teacher_by_subject
-    self.classrooms_name = classroom_names
-    self.groups_names = groups_names
-    self.group_by_assign_by_week_time: dict[str:list[tuple[str, int]]] = group_by_assign_by_week_time
+    super().__init__(subjects_name,teachers_name,possibles_teacher_by_subject,group_by_assign_by_week_time,days_count,shifts_count,classroom_names,groups_names)
 
     self.unknown = 'Unknown'
     self.dict_subjects: dict[str, Subject] = {}
@@ -301,6 +327,8 @@ class Calendar:
     group = self.dict_groups[group_name]
     # Se dice que se dio un turno de esta asignatura
     group.add_subject_shift(subject_name)
+
+
 
   def add(self, group_name: str, classroom_name: str, teacher_name: str, day_name: str, shift_name: str,
           subject_name: str):
@@ -328,3 +356,36 @@ class Calendar:
       group = self.dict_groups[group_name]
       # Comprueba que cada grupo recibió la cant de clases acordadas
       group.check_all_ok()
+
+
+
+class Extras_Hard_Restrictions(CalendarBase):
+
+
+  def __init__(self, subjects_name: list[str], teachers_name: list[str],
+               possibles_teacher_by_subject: dict[str, list[str]],
+               group_by_assign_by_week_time: dict[str, dict[str, int]],
+               days_count=5, shifts_count=3,
+               classroom_names: list[str] = ["1", "2", "postgrado"], groups_names: list[str] = ["C111", "C112"]):
+
+    """
+    Initialize the Scheduler object with the provided parameters.
+
+    Parameters:
+    - subjects_name: list of str, names of the subjects
+    - teachers_name: list of str, names of the teachers
+    - possibles_teacher_by_subject: dict[str, str], mapea una materia y da una lista de posibles profesores
+    - group_by_assign_by_week_time: dict[str, dict[str, int]], tiene los grupos como key y en las llaves las asignaturas con su nombre y time
+    - days_count: int, number of days in a week (default is 5)
+    - shifts_count: int, number of shifts in a day (default is 3)
+    - classroom_names: list of str, names of the classrooms (default is ["1", "2", "postgrado"])
+    - groups_names: list of str, names of the groups (default is ["C111", "C112"])
+
+    Returns:
+    - None
+    """
+    super().__init__(subjects_name,teachers_name,possibles_teacher_by_subject,group_by_assign_by_week_time,days_count,shifts_count,classroom_names,groups_names)
+
+
+
+

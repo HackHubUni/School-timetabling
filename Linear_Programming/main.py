@@ -1,3 +1,4 @@
+import copy
 from enum import Enum
 from Linear_Programming.solver import TimeTablingSolver
 from Linear_Programming.printer import to_excel
@@ -122,20 +123,16 @@ def main():
 
   solver=TimeTablingSolver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
          dict_group_subject_time, shifts, days, dict_teachers_to_subjects)
+
+  solver.add_optional_hard_constraints(teachers_names,[str(Subjects.Algebra)],classrooms_names,groups_names,shifts,[1],len(groups_names))
+  a=copy.deepcopy(subjects_name_list)
+  a.remove(str(Subjects.Algebra))
+  solver.add_False_hard_constraints(teachers_names,a,classrooms_names,groups_names,shifts,[1])
+
   df=solver.solve()
 
   to_excel(df)
-  # Asumiendo que df es tu DataFrame y que 'Dia', 'Espacio' y 'Grupo' son columnas en df
- #with pd.ExcelWriter('output.xlsx') as writer:
- #  for group in df['Group'].unique():
- #    # Filtrar el DataFrame por grupo
- #    df_group = df[df['Group'] == group]
 
- #    # Reorganizar el DataFrame para que los días sean las columnas y los espacios las filas
- #    df_pivot = df_group.pivot(index='Shift', columns='Day')
-
- #    # Escribir el DataFrame reorganizado en una hoja de Excel
- #    df_pivot.to_excel(writer, sheet_name=group)
 
 
 if __name__ == "__main__":
