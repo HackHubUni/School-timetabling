@@ -1,5 +1,6 @@
 from enum import Enum
-
+from Linear_Programming.solver import solver
+from Linear_Programming.printer import to_excel
 
 class Subjects(Enum):
   Programacion = "Programación"
@@ -37,7 +38,7 @@ class Teachers(Enum):
     return self.value
 
 
-from Linear_Programming.solver import solver
+
 import pandas as pd
 
 def main():
@@ -56,7 +57,7 @@ def main():
                            Subjects.Algebra: 1,
                            Subjects.AlgebraCP: 2,
                            Subjects.Analisis: 1,
-                           Subjects.AnalisisCp: 1,
+                           Subjects.AnalisisCp: 2,
                            Subjects.Logica: 1,
                            Subjects.LogicaCp: 1
                            }
@@ -122,7 +123,19 @@ def main():
   df=solver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
          dict_group_subject_time, shifts, days, dict_teachers_to_subjects)
 
+  to_excel(df)
+  # Asumiendo que df es tu DataFrame y que 'Dia', 'Espacio' y 'Grupo' son columnas en df
+ #with pd.ExcelWriter('output.xlsx') as writer:
+ #  for group in df['Group'].unique():
+ #    # Filtrar el DataFrame por grupo
+ #    df_group = df[df['Group'] == group]
 
-  print(resultado)
+ #    # Reorganizar el DataFrame para que los días sean las columnas y los espacios las filas
+ #    df_pivot = df_group.pivot(index='Shift', columns='Day')
+
+ #    # Escribir el DataFrame reorganizado en una hoja de Excel
+ #    df_pivot.to_excel(writer, sheet_name=group)
+
+
 if __name__ == "__main__":
   main()

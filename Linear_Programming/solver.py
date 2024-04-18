@@ -4,8 +4,9 @@ from Linear_Programming.utils import Calendar
 
 import pandas as pd
 
-def _to_data_frame(teacher,subject,classroom,group,shift,day):
-  data=[]
+
+def _list_para_dataframe(teacher,subject,classroom,group,shift,day)->list[dict]:
+  data = []
   # Agregar los datos a la lista como un diccionario
   data.append({
     'Teacher': teacher,
@@ -15,6 +16,9 @@ def _to_data_frame(teacher,subject,classroom,group,shift,day):
     'Shift': shift,
     'Day': day
   })
+  return data
+def _to_data_frame(data):
+
   # Crear un DataFrame a partir de la lista
   df = pd.DataFrame(data)
   return df
@@ -152,6 +156,7 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
 
 
  #Aca se le hace el and para que se asegura que solo se puede tener una materia en un turno por aula
+
   for subject in subjects_name_list:
     for group in groups_names:
       for teacher in teachers_names:
@@ -177,7 +182,8 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
     print("Número de nodos explorados:", solver.NumBranches())
     print("Tiempo de ejecución:", solver.WallTime())
     return
-  df=None
+
+  lis=[]
   if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
     for profesor in teachers_names:
       for asignatura in dict_teachers_to_subjects[profesor]:
@@ -188,7 +194,7 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
                 if solver.value(variables[profesor, asignatura, aula, grupo, turno, dia]) == 1:
                   to_print = f'profesor:{profesor},asignatura:{asignatura},aula:{aula},grupo:{grupo},turno:{turno},dia:{dia}'
                   print(to_print)
-                  df=_to_data_frame(profesor,asignatura,aula,grupo,turno,dia)
+                  lis+=_list_para_dataframe(profesor,asignatura,aula,grupo,turno,dia)
                   if True:
                     calendar.add(grupo, aula, profesor, str(dia), str(turno), asignatura)
                   else:
@@ -199,5 +205,5 @@ def solver(subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], 
 
   # Chequea que se cumple la cantidad de horas clases por grupo de alas asignaturas por semana
   calendar.finish()
-  return df
+  return _to_data_frame(lis)
 
