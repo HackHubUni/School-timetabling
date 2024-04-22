@@ -4,13 +4,12 @@ from flask import Flask, request, jsonify
 from marshmallow import ValidationError
 from src.solver import TimeTablingSolver
 from API.schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
-  MaximizeSoftConstraints, MinimizeSoftConstraints
+  MaximizeSoftConstraintsSchema, MinimizeSoftConstraintsSchemaSchema
 from API.utils import serialize_solver, check_schema, deserialize
 from src.printer import send_excel
 
 app = Flask(__name__)
 solver_schema = SolverSchema()
-
 
 # Aca se llama para crear un horario con las restricciones básicas
 @app.route('/solver', methods=['POST'])
@@ -61,6 +60,32 @@ def get_optional_hard_constrains_schema():
   # Return the fields of the schema instead of trying to serialize the schema instance itself
   return jsonify({field: str(type_) for field, type_ in schema.fields.items()})
 
+# Add TrueHardConstraints Schema
+@app.route('/solver/true_hard_constrains_schema', methods=['GET'])
+def get_true_hard_constrains_schema():
+  schema=TrueHardConstraints()
+  # Return the fields of the schema instead of trying to serialize the schema instance itself
+  return jsonify({field: str(type_) for field, type_ in schema.fields.items()})
+
+# Add FalseHardConstraints Schema
+@app.route('/solver/false_hard_constrains_schema', methods=['GET'])
+def get_false_hard_constrains_schema():
+  schema=FalseHardConstraints()
+  # Return the fields of the schema instead of trying to serialize the schema instance itself
+  return jsonify({field: str(type_) for field, type_ in schema.fields.items()})
+
+#Add MaximizeSoftConstraintsSchema
+@app.route('/solver/maximize_soft_constrains_schema', methods=['GET'])
+def get_maximize_soft_constrains_schema():
+  schema=MaximizeSoftConstraintsSchema()
+  # Return the fields of the schema instead of trying to serialize the schema instance itself
+  return jsonify({field: str(type_) for field, type_ in schema.fields.items()})
+
+@app.route('/solver/minimize_soft_constrains_schema', methods=['GET'])
+def get_minimize_soft_constrains_schema():
+  schema=MinimizeSoftConstraintsSchemaSchema()
+  # Return the fields of the schema instead of trying to serialize the schema instance itself
+  return jsonify({field: str(type_) for field, type_ in schema.fields.items()})
 
 
 #Para descargar los datos de los excel
@@ -124,7 +149,7 @@ def false_hard_constraints():
 
 @app.route('/solver/MaximizeSoftConstraints', methods=['POST'])
 def maximize_soft_constraints():
-  schema = MaximizeSoftConstraints()
+  schema = MaximizeSoftConstraintsSchema()
   validated_data = check_schema(schema)
   solver:TimeTablingSolver = deserialize()
   solver.add_Maximize_soft_constraints(**validated_data)
@@ -134,7 +159,7 @@ def maximize_soft_constraints():
 
 @app.route('/solver/MinimizeSoftConstraints', methods=['POST'])
 def minimize_soft_constraints():
-  schema = MinimizeSoftConstraints()
+  schema = MinimizeSoftConstraintsSchemaSchema()
   validated_data = check_schema(schema)
   solver:TimeTablingSolver = deserialize()
   solver.add_Minimize_soft_constraints(**validated_data)

@@ -25,15 +25,15 @@ class FalseHardConstraints(AddBooleanHardConstraintsBase):
   pass
 
 
-class SoftConstraints(AddBooleanHardConstraintsBase):
+class SoftConstraintsSchema(AddBooleanHardConstraintsBase):
   alpha_value = fields.Int()
 
 
-class MaximizeSoftConstraints(SoftConstraints):
+class MaximizeSoftConstraintsSchema(SoftConstraintsSchema):
   pass
 
 
-class MinimizeSoftConstraints(SoftConstraints):
+class MinimizeSoftConstraintsSchemaSchema(SoftConstraintsSchema):
   pass
 
 
