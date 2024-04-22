@@ -344,12 +344,12 @@ class TimeTablingSolver(TimeTablingSolverBase):
     status = solver.Solve(self.model)
 
     if status == cp_model.INFEASIBLE:
-      print("No se puede resolver")
-      # Analizar el estado del modelo
-      print("Código de estado:", solver.status_name())
-      print("Número de nodos explorados:", solver.NumBranches())
-      print("Tiempo de ejecución:", solver.WallTime())
-      return
+      #print("No se puede resolver")
+      ## Analizar el estado del modelo
+      #print("Código de estado:", solver.status_name())
+      #print("Número de nodos explorados:", solver.NumBranches())
+      #print("Tiempo de ejecución:", solver.WallTime())
+      return f'"No se puede resolver",\n "Código de estado:", {solver.status_name()} \n "Número de nodos explorados:", {solver.NumBranches(),},"Tiempo de ejecución:", {solver.WallTime()}'
 
     lis = []
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
@@ -361,7 +361,7 @@ class TimeTablingSolver(TimeTablingSolverBase):
                 for day in self.days:
                   if solver.value(self.vars[teacher, subject, classroom, group, shift, day]) == 1:
                     to_print = f'profesor:{teacher},asignatura:{subject},aula:{classroom},grupo:{group},turno:{shift},dia:{day}'
-                    print(to_print)
+                    #print(to_print)
                     lis += self._list_para_dataframe(teacher, subject, classroom, group, shift, day)
                     if show_all_exceptions:
                       self.calendar.add(group, classroom, teacher, str(day), str(shift), subject)
