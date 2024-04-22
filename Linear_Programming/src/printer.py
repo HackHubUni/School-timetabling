@@ -16,7 +16,7 @@ def to_excel(df: DataFrame):
   df['Info'] = 'Profesor:' + df['Teacher'] + "\n" "Asignatura:" + df['Subject'] + "\n" + "Aula:" + df['Classroom']
   # df['Teacher'] + ', ' + df['Subject'] + ', ' + df['Classroom']
 
-  with pd.ExcelWriter('output.xlsx') as writer:
+  with pd.ExcelWriter('../API/output.xlsx') as writer:
     for group in df['Group'].unique():
       # Filtrar el DataFrame por grupo
       df_group = df[df['Group'] == group]
@@ -33,10 +33,10 @@ def send_excel(df: DataFrame):
 
   df['Info'] = 'Profesor:' + df['Teacher'] + "\n" "Asignatura:" + df['Subject'] + "\n" + "Aula:" + df['Classroom']
 
-  with pd.ExcelWriter('output.xlsx') as writer:
+  with pd.ExcelWriter('../API/output.xlsx') as writer:
     for group in df['Group'].unique():
       df_group = df[df['Group'] == group]
       df_pivot = df_group.pivot(index='Shift', columns='Day', values='Info')
       df_pivot.to_excel(writer, sheet_name=group)
 
-  return send_file('output.xlsx', as_attachment=True)
+  return send_file('../API/output.xlsx', as_attachment=True)

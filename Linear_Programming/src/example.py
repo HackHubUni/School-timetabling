@@ -1,7 +1,7 @@
 import copy
 from enum import Enum
-from Linear_Programming.solver import TimeTablingSolver
-from Linear_Programming.printer import to_excel
+from src.solver import TimeTablingSolver
+from src.printer import to_excel
 
 class Subjects(Enum):
   Programacion = "Programación"
@@ -38,9 +38,6 @@ class Teachers(Enum):
   def __str__(self):
     return self.value
 
-
-
-import pandas as pd
 
 def main():
   subjects_name_list = [Subjects.Programacion,
@@ -132,6 +129,7 @@ def main():
   df=solver.solve()
 
   to_excel(df)
+
 
 
 

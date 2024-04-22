@@ -2,8 +2,8 @@ from ortools.constraint_solver.pywrapcp import IntVar
 from ortools.sat.python import cp_model
 from ortools.sat.python.cp_model import CpModel
 
-from Linear_Programming.utils import Calendar
-from printer import to_data_frame
+from src.utils import Calendar
+from src.printer import to_data_frame
 
 
 class TimeTablingSolverBase:
@@ -269,10 +269,13 @@ class TimeTablingSolver(TimeTablingSolverBase):
 
   def get_var(self, teacher_name: str, subject_name: str, classroom_name: str, group_name: str, shift_int: int,
               day_int: int):
-    if not (isinstance(shift_int, int) and isinstance(day_int, int)):
-      raise Exception(f"El turno:{type(shift_int)} o el dia:{type(day_int)} no se ha dado como entero")
-    return self.vars[teacher_name, subject_name, classroom_name, group_name, shift_int, day_int]
-
+    try:
+      if not (isinstance(shift_int, int) and isinstance(day_int, int)):
+        raise Exception(f"El turno:{type(shift_int)} o el dia:{type(day_int)} no se ha dado como entero")
+      return self.vars[teacher_name, subject_name, classroom_name, group_name, shift_int, day_int]
+    except Exception as e:
+      print(f'kdkd {e},:::::{self.vars[teacher_name, subject_name, classroom_name, group_name, shift_int, day_int]}')
+      raise Exception(f'Error en get_vars: {str(e)}')
   def _global_hard_restrictions(self):
     """
     Restricciones hard globales
@@ -381,13 +384,18 @@ class TimeTablingSolver(TimeTablingSolverBase):
     """Crea la sumatoria de las combinaciones
      de las listas que se le pasan para que despues se puedan asignar
       si se debe cumplir la restriccion s==1 o no s==0"""
+    try:
+      s = sum(self.get_var(teacher_name, subject_name, classroom_name, group_name, shift_int, day_int)
+              for teacher_name in teachers_name for subject_name in subjects_name for classroom_name in classrooms_name
+              for group_name in groups_name for shift_int in shifts_int for day_int in days_int
+              if subject_name in self.dict_teachers_to_subjects[teacher_name])
 
-    s = sum(self.get_var(teacher_name, subject_name, classroom_name, group_name, shift_int, day_int)
-            for teacher_name in teachers_name for subject_name in subjects_name for classroom_name in classrooms_name
-            for group_name in groups_name for shift_int in shifts_int for day_int in days_int
-            if subject_name in self.dict_teachers_to_subjects[teacher_name])
+      return s
+    except Exception as e:
+      print(type(teachers_name))
 
-    return s
+      print(f'el error ::{e}')
+      raise  Exception(f"Error en crear la suma para las opciones bases: {str(e)}")
 
   def add_optional_hard_constraints(self, teachers_name: list[str], subjects_name: list[str],
                                     classrooms_name: list[str], groups_name: list[str]
@@ -397,10 +405,17 @@ class TimeTablingSolver(TimeTablingSolverBase):
      OJO:Peligroso de usar se recomienda usar el add_False_hard_constraints para si se quiere restringir o el
      add_True_hard_constraints si se quiere obligar a que suceda
      """
+    try:
 
-    s = self._create_sum_for_optional_hard_restriction(teachers_name, subjects_name, classrooms_name, groups_name,
-                                                       shifts_int, days_int)
-    self.model.add(s == count_to_be_equals)
+
+      s = self._create_sum_for_optional_hard_restriction(teachers_name, subjects_name, classrooms_name, groups_name,
+                                                         shifts_int, days_int)
+      if not isinstance(count_to_be_equals,int):
+        raise Exception(f"No es un numero es un {type(count_to_be_equals)}")
+      self.model.add(s == count_to_be_equals)
+    except Exception as e:
+      raise Exception(f'El error en agregar restricciones opcionales: {str(e)}')
+
 
   def add_False_hard_constraints(self, teachers_name: list[str], subjects_name: list[str],
                                  classrooms_name: list[str], groups_name: list[str]
