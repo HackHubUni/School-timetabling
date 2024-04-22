@@ -11,7 +11,7 @@ from src.printer import send_excel
 app = Flask(__name__)
 solver_schema = SolverSchema()
 
-
+# Aca se llama para crear un horario con las restricciones básicas
 @app.route('/solver', methods=['POST'])
 def create_solver():
   try:
@@ -26,7 +26,7 @@ def create_solver():
 
   return {"message": "Solver instance created successfully"}, 201
 
-
+#Para recuperar un dataframe del horario que se creo
 @app.route('/dataframe', methods=['GET'])
 def get_dataframe():
   # Deserializar la instancia de solver
@@ -46,12 +46,14 @@ def get_dataframe():
 
   return jsonify(df_json)
 
+#Para tener el esquema de como setean los datos
 
 @app.route('/solver/schema', methods=['GET'])
 def get_solver_schema():
   # Return the fields of the schema instead of trying to serialize the schema instance itself
   return jsonify({field: str(type_) for field, type_ in solver_schema.fields.items()})
 
+#Para descargar los datos de los excel
 
 @app.route('/download_excel')
 def download_excel():
@@ -76,69 +78,59 @@ def download_excel():
 @app.route('/solver/add_hard_optional_constraints', methods=['POST'])
 def add_hard_optional_constraints():
   schema = optional_hard_constraints()
-  try:
 
-    validated_data = check_schema(schema)
-    solver:TimeTablingSolver = deserialize()
-    solver.add_optional_hard_constraints(**validated_data)
-    serialize_solver(solver)
-    return {"message": "Solver hard optionals constraints added"}, 201
 
-  except Exception as e:
-    print(str(e))
-    return jsonify({"error": str(e)}), 500
+  validated_data = check_schema(schema)
+  solver:TimeTablingSolver = deserialize()
+  solver.add_optional_hard_constraints(**validated_data)
+  serialize_solver(solver)
+  return {"message": "Solver hard optionals constraints added"}, 201
+
+
 
  #Condiciones hard opcionales se añaden
 @app.route('/solver/TrueHardConstraints', methods=['POST'])
 def true_hard_constraints():
   schema = TrueHardConstraints()
-  try:
-    validated_data = check_schema(schema)
-    solver:TimeTablingSolver = deserialize()
-    solver.add_True_hard_constraints(**validated_data)
-    serialize_solver(solver)
-    return {"message": "Solver hard optionals constraints added"}, 201
+  validated_data = check_schema(schema)
+  solver:TimeTablingSolver = deserialize()
+  solver.add_True_hard_constraints(**validated_data)
+  serialize_solver(solver)
+  return {"message": "Solver hard optionals constraints added"}, 201
 
-  except Exception as e:
-    return jsonify({"error": e}), 500
+
 
 @app.route('/solver/FalseHardConstraints', methods=['POST'])
 def false_hard_constraints():
   schema = FalseHardConstraints()
-  try:
-    validated_data = check_schema(schema)
-    solver:TimeTablingSolver = deserialize()
-    solver.add_False_hard_constraints(**validated_data)
-    serialize_solver(solver)
-    return {"message": "Solver hard optionals constraints added"}, 201
+  validated_data = check_schema(schema)
+  solver:TimeTablingSolver = deserialize()
+  solver.add_False_hard_constraints(**validated_data)
+  serialize_solver(solver)
+  return {"message": "Solver hard optionals constraints added"}, 201
 
-  except Exception as e:
-    return jsonify({"error": e}), 500
+
 
 
 @app.route('/solver/MaximizeSoftConstraints', methods=['POST'])
 def maximize_soft_constraints():
   schema = MaximizeSoftConstraints()
-  try:
-    validated_data = check_schema(schema)
-    solver:TimeTablingSolver = deserialize()
-    solver.add_Maximize_soft_constraints(**validated_data)
-    serialize_solver(solver)
-    return {"message": "Solver hard optionals constraints added"}, 201
-  except Exception as e:
-    return jsonify({"error": e}), 500
+  validated_data = check_schema(schema)
+  solver:TimeTablingSolver = deserialize()
+  solver.add_Maximize_soft_constraints(**validated_data)
+  serialize_solver(solver)
+  return {"message": "Solver hard optionals constraints added"}, 201
+
 
 @app.route('/solver/MinimizeSoftConstraints', methods=['POST'])
 def minimize_soft_constraints():
   schema = MinimizeSoftConstraints()
-  try:
-    validated_data = check_schema(schema)
-    solver:TimeTablingSolver = deserialize()
-    solver.add_Minimize_soft_constraints(**validated_data)
-    serialize_solver(solver)
+  validated_data = check_schema(schema)
+  solver:TimeTablingSolver = deserialize()
+  solver.add_Minimize_soft_constraints(**validated_data)
+  serialize_solver(solver)
 
-  except Exception as e:
-    return jsonify({"error": e}), 500
+
 
 
 
