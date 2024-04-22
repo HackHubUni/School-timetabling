@@ -550,7 +550,7 @@ class TimeTablingSolver(TimeTablingSolverBase):
         raise Exception(f"No es un numero es un {type(count_to_be_equals)}")
       self.model.add(s == count_to_be_equals)
       if count_to_be_equals<0:
-        raise AddNewConstraintException(f'count_to_be_equals has to be >=0 and it s be {count_to_be_equals}')
+        raise AddNewConstraintException(f'count_to_be_equals has to be >= 0 and it s be {count_to_be_equals}')
     except Exception as e:
       raise Exception(f'El error en agregar restricciones opcionales: {str(e)}')
 

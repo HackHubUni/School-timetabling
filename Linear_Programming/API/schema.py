@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields
 
 
-class add_Boolean_hard_constraints_Base(Schema):
+class AddBooleanHardConstraintsBase(Schema):
 
 
   teachers_name = fields.List(fields.Str(), required=True)
@@ -12,20 +12,20 @@ class add_Boolean_hard_constraints_Base(Schema):
   days_int = fields.List(fields.Int(), required=True)
 
 
-class optional_hard_constraints(add_Boolean_hard_constraints_Base):
+class OptionalHardConstraints(AddBooleanHardConstraintsBase):
   # A cuanto tiene que ser igual
   count_to_be_equals = fields.Int()
 
 
-class TrueHardConstraints(add_Boolean_hard_constraints_Base):
+class TrueHardConstraints(AddBooleanHardConstraintsBase):
   pass
 
 
-class FalseHardConstraints(add_Boolean_hard_constraints_Base):
+class FalseHardConstraints(AddBooleanHardConstraintsBase):
   pass
 
 
-class SoftConstraints(add_Boolean_hard_constraints_Base):
+class SoftConstraints(AddBooleanHardConstraintsBase):
   alpha_value = fields.Int()
 
 

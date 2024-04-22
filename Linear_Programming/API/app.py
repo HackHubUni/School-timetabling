@@ -3,13 +3,14 @@ import pickle
 from flask import Flask, request, jsonify
 from marshmallow import ValidationError
 from src.solver import TimeTablingSolver
-from API.schema import SolverSchema, optional_hard_constraints, TrueHardConstraints, FalseHardConstraints, \
+from API.schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
   MaximizeSoftConstraints, MinimizeSoftConstraints
 from API.utils import serialize_solver, check_schema, deserialize
 from src.printer import send_excel
 
 app = Flask(__name__)
 solver_schema = SolverSchema()
+
 
 # Aca se llama para crear un horario con las restricciones básicas
 @app.route('/solver', methods=['POST'])
@@ -53,6 +54,15 @@ def get_solver_schema():
   # Return the fields of the schema instead of trying to serialize the schema instance itself
   return jsonify({field: str(type_) for field, type_ in solver_schema.fields.items()})
 
+#Add optional HardConstraints Schema
+@app.route('/solver/optional_hard_constrains_schema', methods=['GET'])
+def get_optional_hard_constrains_schema():
+  schema=OptionalHardConstraints()
+  # Return the fields of the schema instead of trying to serialize the schema instance itself
+  return jsonify({field: str(type_) for field, type_ in schema.fields.items()})
+
+
+
 #Para descargar los datos de los excel
 
 @app.route('/download_excel')
@@ -77,7 +87,7 @@ def download_excel():
 
 @app.route('/solver/add_hard_optional_constraints', methods=['POST'])
 def add_hard_optional_constraints():
-  schema = optional_hard_constraints()
+  schema = OptionalHardConstraints()
 
 
   validated_data = check_schema(schema)
