@@ -1,6 +1,8 @@
+import os
+from matplotlib.backends.backend_pdf import PdfPages
 import pandas as pd
 from pandas import DataFrame
-from flask import send_file
+from flask import send_file, jsonify
 
 
 def to_data_frame(data):
@@ -30,13 +32,37 @@ def to_excel(df: DataFrame):
 
 
 def send_excel(df: DataFrame):
-
+  print("Entre")
   df['Info'] = 'Profesor:' + df['Teacher'] + "\n" "Asignatura:" + df['Subject'] + "\n" + "Aula:" + df['Classroom']
 
-  with pd.ExcelWriter('../API/output.xlsx') as writer:
+  # Get the directory of the current file (printer.py)
+  dir_path = os.path.dirname(os.path.realpath(__file__))
+  # Construct the file path
+  file_path = os.path.join(dir_path, 'output.xlsx')
+  with pd.ExcelWriter(file_path) as writer:
     for group in df['Group'].unique():
       df_group = df[df['Group'] == group]
       df_pivot = df_group.pivot(index='Shift', columns='Day', values='Info')
       df_pivot.to_excel(writer, sheet_name=group)
 
-  return send_file('../API/output.xlsx', as_attachment=True)
+  if os.path.exists(file_path) and os.access(file_path, os.R_OK):
+    # El archivo existe y es legible
+    print(48484)
+    try:
+      return send_file(file_path, as_attachment=True)
+    except Exception as e:
+      return jsonify({"error": str(e)}), 500
+
+  else:
+    # El archivo no existe o no es legible
+    if not os.path.exists(file_path):
+      return jsonify({"error": "File not found"}), 404
+    else:
+      return jsonify({"error": "File is not readable"}), 403
+
+
+
+
+
+
+

@@ -73,16 +73,14 @@ def download_excel():
 
 # To add optinals HardConstrainst
 
-@app.route('/x', methods=['POST'])
+@app.route('/solver/add_hard_optional_constraints', methods=['POST'])
 def add_hard_optional_constraints():
   schema = optional_hard_constraints()
   try:
 
     validated_data = check_schema(schema)
     solver:TimeTablingSolver = deserialize()
-    print(validated_data)
     solver.add_optional_hard_constraints(**validated_data)
-    print("Added")
     serialize_solver(solver)
     return {"message": "Solver hard optionals constraints added"}, 201
 
@@ -99,6 +97,7 @@ def true_hard_constraints():
     solver:TimeTablingSolver = deserialize()
     solver.add_True_hard_constraints(**validated_data)
     serialize_solver(solver)
+    return {"message": "Solver hard optionals constraints added"}, 201
 
   except Exception as e:
     return jsonify({"error": e}), 500
@@ -111,6 +110,7 @@ def false_hard_constraints():
     solver:TimeTablingSolver = deserialize()
     solver.add_False_hard_constraints(**validated_data)
     serialize_solver(solver)
+    return {"message": "Solver hard optionals constraints added"}, 201
 
   except Exception as e:
     return jsonify({"error": e}), 500
@@ -124,7 +124,7 @@ def maximize_soft_constraints():
     solver:TimeTablingSolver = deserialize()
     solver.add_Maximize_soft_constraints(**validated_data)
     serialize_solver(solver)
-
+    return {"message": "Solver hard optionals constraints added"}, 201
   except Exception as e:
     return jsonify({"error": e}), 500
 
