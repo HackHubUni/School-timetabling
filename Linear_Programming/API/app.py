@@ -92,19 +92,17 @@ def get_minimize_soft_constrains_schema():
 
 @app.route('/download_excel')
 def download_excel():
-  try:
+
     solver = deserialize()
-    try:
-      df = solver.solve()
-    except Exception as e:  # Catch any errors thrown by solver.solve()
-      return jsonify({"error": str(e)}), 500
+
+    df = solver.solve()
+
     # Si es un str es un error
     if isinstance(df, str):
       return jsonify({df}), 200
-
+    print("va e entrar al send_excel")
     return send_excel(df)
-  except Exception as e:
-    return jsonify({"error": "Solver instance not found"}), 404
+
 
 
 
