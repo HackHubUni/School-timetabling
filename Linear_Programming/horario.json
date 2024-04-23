@@ -1,0 +1,190 @@
+{
+    "subjects_name_list": [
+        "Programación",
+        "AlgebraConf",
+        "AlgebraCP",
+        "Calculo",
+        "Fisica",
+        "Quimica",
+        "Biologia",
+        "Historia",
+        "Geografia",
+        "Matemáticas",
+        "Informática"
+    ],
+    "dict_subjects_by_time": {
+        "Programación": 2,
+        "AlgebraConf": 1,
+        "AlgebraCP": 2,
+        "Calculo": 3,
+        "Fisica": 1,
+        "Quimica": 2,
+        "Biologia": 3,
+        "Historia": 1,
+        "Geografia": 2,
+        "Matemáticas": 2,
+        "Informática": 1
+    },
+    "teachers_names": [
+        "Piad",
+        "Celia",
+        "Juan",
+        "Ana",
+        "Carlos",
+        "Maria",
+        "Luis",
+        "Sofia",
+        "Pedro",
+        "Laura"
+    ],
+    "classrooms_names": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+    ],
+    "groups_names": [
+        "C111",
+        "C112",
+        "C113",
+        "C114",
+        "C115",
+        "C116"
+    ],
+    "dict_group_subject_time": {
+        "C111": {
+            "Programación": 2,
+            "AlgebraConf": 1,
+            "AlgebraCP": 2,
+            "Calculo": 3,
+            "Fisica": 1,
+            "Quimica": 2,
+            "Biologia": 3,
+            "Historia": 1,
+            "Geografia": 2,
+            "Matemáticas": 2,
+            "Informática": 1
+        },
+        "C112": {
+            "Programación": 2,
+            "AlgebraConf": 1,
+            "AlgebraCP": 2,
+            "Calculo": 3,
+            "Fisica": 1,
+            "Quimica": 2,
+            "Biologia": 3,
+            "Historia": 1,
+            "Geografia": 2,
+            "Matemáticas": 2,
+            "Informática": 1
+        },
+        "C113": {
+            "Programación": 2,
+            "AlgebraConf": 1,
+            "AlgebraCP": 2,
+            "Calculo": 3,
+            "Fisica": 1,
+            "Quimica": 2,
+            "Biologia": 3,
+            "Historia": 1,
+            "Geografia": 2,
+            "Matemáticas": 2,
+            "Informática": 1
+        },
+        "C114": {
+            "Programación": 2,
+            "AlgebraConf": 1,
+            "AlgebraCP": 2,
+            "Calculo": 3,
+            "Fisica": 1,
+            "Quimica": 2,
+            "Biologia": 3,
+            "Historia": 1,
+            "Geografia": 2,
+            "Matemáticas": 2,
+            "Informática": 1
+        },
+        "C115": {
+            "Programación": 2,
+            "AlgebraConf": 1,
+            "AlgebraCP": 2,
+            "Calculo": 3,
+            "Fisica": 1,
+            "Quimica": 2,
+            "Biologia": 3,
+            "Historia": 1,
+            "Geografia": 2,
+            "Matemáticas": 2,
+            "Informática": 1
+        },
+        "C116": {
+            "Programación": 2,
+            "AlgebraConf": 1,
+            "AlgebraCP": 2,
+            "Calculo": 3,
+            "Fisica": 1,
+            "Quimica": 2,
+            "Biologia": 3,
+            "Historia": 1,
+            "Geografia": 2,
+            "Matemáticas": 2,
+            "Informática": 1
+        }
+    },
+    "shifts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+    ],
+    "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+    ],
+    "dict_teachers_to_subjects": {
+        "Piad": [
+            "Programación"
+        ],
+        "Celia": [
+            "AlgebraConf"
+        ],
+        "Juan": [
+            "AlgebraCP"
+        ],
+        "Ana": [
+            "Calculo"
+        ],
+        "Carlos": [
+            "Fisica"
+        ],
+        "Maria": [
+            "Quimica"
+        ],
+        "Luis": [
+            "Biologia"
+        ],
+        "Sofia": [
+            "Historia",
+            "Geografia"
+        ],
+        "Pedro": [
+            "Matemáticas"
+        ],
+        "Laura": [
+            "Informática"
+        ]
+    }
+}
