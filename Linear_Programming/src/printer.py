@@ -18,7 +18,7 @@ def to_excel(df: DataFrame):
   df['Info'] = 'Profesor:' + df['Teacher'] + "\n" "Asignatura:" + df['Subject'] + "\n" + "Aula:" + df['Classroom']
   # df['Teacher'] + ', ' + df['Subject'] + ', ' + df['Classroom']
 
-  with pd.ExcelWriter('../API/output.xlsx') as writer:
+  with pd.ExcelWriter('./output.xlsx') as writer:
     for group in df['Group'].unique():
       # Filtrar el DataFrame por grupo
       df_group = df[df['Group'] == group]

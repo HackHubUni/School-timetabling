@@ -4,10 +4,10 @@ from ortools.sat.python.cp_model import CpModel
 from API.exceptions import LaunchingException, AddNewConstraintException
 from src.utils import Calendar
 from src.printer import to_data_frame
+from src.to_json import Group
 
 
 class TimeTablingSolverBase:
-
 
   def _check_exist_in_list(self, list_to_check: list[str | int], correct_list: list[str | int], type_name: str):
     """
@@ -32,9 +32,6 @@ class TimeTablingSolverBase:
       if item not in dict_subjects_by_time:
         raise LaunchingException(f'The subject {item} has not time in assign')
 
-
-
-
   def check_subject_group(self, dict_subjects_by_time: dict[str, int],
                           dict_group_subject_time: dict[str, dict[str, int]], groups_names: list[str]):
     """
@@ -44,23 +41,21 @@ class TimeTablingSolverBase:
     :param groups_names:
     :return:
     """
-    #Comprobar que los nombres de los grupos coinciden osea que lo que este en el diccionario sea correcto
-    self._check_exist_in_list(dict_group_subject_time.keys(),groups_names,"Group")
+    # Comprobar que los nombres de los grupos coinciden osea que lo que este en el diccionario sea correcto
+    self._check_exist_in_list(dict_group_subject_time.keys(), groups_names, "Group")
 
-
-
-    #Comprueba por los grupos
+    # Comprueba por los grupos
     for group in groups_names:
-      #Si el grupo no tiene materias
+      # Si el grupo no tiene materias
       if group not in dict_group_subject_time:
         raise LaunchingException(f'The group:{group} has not subjects assign')
       # Asignaturas por equipos
-      dict_group_subject= dict_group_subject_time[group]
+      dict_group_subject = dict_group_subject_time[group]
       # Ver por casa asignatura asignadas a los equipos
       for subject in dict_group_subject.keys():
         # Chequear que el tiempo que se le asigne a la asignatura en ese grupo sea mayor o igual al asignado global
         count_group_subject_time: int = dict_group_subject[subject]
-        #Chequear que la asignatura asignada a este grupo exista dado que dict_subjects_by_time se verifico contra las
+        # Chequear que la asignatura asignada a este grupo exista dado que dict_subjects_by_time se verifico contra las
         # asignaturas anteriormente
         if subject not in dict_subjects_by_time:
           raise LaunchingException(f'In the group:{group} the subject: {subject} don t exists')
@@ -110,9 +105,9 @@ class TimeTablingSolverBase:
     self.check_subject_group(dict_subjects_by_time, dict_group_subject_time, groups_names)
     self.check_teachers(teachers_names, dict_teachers_to_subjects, subjects_name_list)
 
-  def __init__(self, subjects_name_list: list[str], dict_subjects_by_time: dict[str:int], teachers_names: list[str],
+  def __init__(self, subjects_name_list: list[str], dict_subjects_by_time: dict[str, int], teachers_names: list[str],
                classrooms_names: list[str],
-               groups_names: list[str], dict_group_subject_time: dict[str, dict[str:int]], shifts: list[int],
+               groups_names: list[str], dict_group_subject_time: dict[str, dict[str, int]], shifts: list[int],
                days: list[int], dict_teachers_to_subjects: dict[str, list[str]]):
 
     # Chequear que los datos no tengan errores entre ellos
@@ -124,7 +119,7 @@ class TimeTablingSolverBase:
     self.teachers_names: list[str] = teachers_names
     self.classrooms_names: list[str] = classrooms_names
     self.groups_names: list[str] = groups_names
-    self.dict_group_subject_time: dict[str, dict[str:int]] = dict_group_subject_time
+    self.dict_group_subject_time: dict[str, dict[str, int]] = dict_group_subject_time
     self.shifts: list[int] = shifts
     self.days: list[int] = days
     self.dict_teachers_to_subjects: dict[str, list[str]] = dict_teachers_to_subjects
@@ -322,6 +317,9 @@ class TimeTablingSolver(TimeTablingSolverBase):
     self._classroom_restrictions = ClassroomRestriction(*args)
     # self.vars: dict[tuple[str, str, str, str, int, int], "IntVar"] = {}
 
+    # dict de grupo a su lista de asignaturas:
+    self.dict_group_subject: dict[str, list[str]] = {}
+
     # Call Start
     self.start()
 
@@ -337,8 +335,23 @@ class TimeTablingSolver(TimeTablingSolverBase):
   #  def vars(self, value):
   #    self.vars = value
 
+  def create_groups_subjectsList_dict(self):
+
+    for group in self.groups_names:
+      lis = []
+      dic = self.dict_group_subject_time[group]
+      for subject in self.subjects_name_list:
+        if subject in dic:
+          lis.append(subject)
+
+      if group in self.dict_group_subject:
+        raise Exception(f"El grupo{group} no puede existir dos veces")
+      self.dict_group_subject[group] = lis
+
   def start(self):
     self._create_problems_vars()
+
+    self.create_groups_subjectsList_dict()
 
     # LLamar las restricciones hard
 
@@ -388,18 +401,42 @@ class TimeTablingSolver(TimeTablingSolverBase):
 
       raise Exception(f'Error en get_vars: {str(e)}')
 
+  def _check_if_a_group_cant_take_a_subject_and_a_teacher(self, subject_name: str, group_name: str, teacher_name: str):
+    dic = self.dict_group_subject_time[group_name]
+    return subject_name in dic and subject_name in self.dict_teachers_to_subjects[teacher_name]
+
+  def check_a_group_can_take_a_subject(self, subject_name: str, group_name: str):
+    dic = self.dict_group_subject_time[group_name]
+    return subject_name in dic
+
+  def _get_list_of_possibleSubjectsFromAGroup(self, group_name: str) -> list[str]:
+    if group_name not in self.dict_group_subject:
+      raise Exception(f'El grupo {group_name} no se encuentra en el dict_group_subject')
+    return self.dict_group_subject[group_name]
+
   def _global_hard_restrictions(self):
     """
     Restricciones hard globales
     """
     # Que siempre se den todos los turnos de las asignaturas en cada grupo
-    for subject in self.subjects_name_list:
-      for group in self.groups_names:
+    for group in self.groups_names:
+      for subject in self._get_list_of_possibleSubjectsFromAGroup(group):
         s = sum(
           self.vars[profesor, subject, aula, group, turno, dia] for profesor in self.teachers_names for aula in
           self.classrooms_names
-          for turno in self.shifts for dia in self.days if subject in self.dict_teachers_to_subjects[profesor])
+          for turno in self.shifts for dia in self.days if
+          self._check_if_a_group_cant_take_a_subject_and_a_teacher(subject, group, profesor))
         self.model.add(s == self.dict_subjects_by_time[subject])
+
+      # Que las asignaturas no que le corresponden a un grupo sea 0 su suma
+      for grupo in self.groups_names:
+        s = sum(self.vars[profesor, subject, aula, grupo, turno, dia] for profesor in self.teachers_names for aula in
+                self.classrooms_names
+                for turno in self.shifts for dia in self.days
+                for subject in self.subjects_name_list
+                if subject
+                not in self._get_list_of_possibleSubjectsFromAGroup(grupo))
+        self.model.add(s == 0)
 
       # Que un grupo pueda estar en un turno en una sola aula dando una sola asignatura
       for day in self.days:
@@ -448,7 +485,7 @@ class TimeTablingSolver(TimeTablingSolverBase):
 
                     self.vars[teacher, subject, classroom, group, shift, day])
 
-  def solve(self, show_all_exceptions: bool = True):
+  def solve(self, show_all_exceptions: bool = True, return_dataFrame=True):
     """
     Resuelve el problema del horario
     :return:
@@ -467,6 +504,7 @@ class TimeTablingSolver(TimeTablingSolverBase):
       return f'"No se puede resolver",\n "Código de estado:", {solver.status_name()} \n "Número de nodos explorados:", {solver.NumBranches(),},"Tiempo de ejecución:", {solver.WallTime()}'
 
     lis = []
+    group_return_dict: dict[str, Group] = {}
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
       for teacher in self.teachers_names:
         for subject in self.dict_teachers_to_subjects[teacher]:
@@ -478,6 +516,14 @@ class TimeTablingSolver(TimeTablingSolverBase):
                     to_print = f'profesor:{teacher},asignatura:{subject},aula:{classroom},grupo:{group},turno:{shift},dia:{day}'
                     # print(to_print)
                     lis += self._list_para_dataframe(teacher, subject, classroom, group, shift, day)
+                    # Añadir al dict de Groups que es para devolver en caso de quererse un json
+                    if group in group_return_dict:
+                      group_return_dict[group].add(day, shift, teacher, subject, classroom)
+                    else:
+                      x = Group(group)
+                      x.add(day, shift, teacher, subject, classroom)
+                      group_return_dict[group] = x
+
                     if show_all_exceptions:
                       self.calendar.add(group, classroom, teacher, str(day), str(shift), subject)
                     else:
@@ -488,9 +534,10 @@ class TimeTablingSolver(TimeTablingSolverBase):
 
     # Chequea que se cumple la cantidad de horas clases por grupo de a las asignaturas por semana
     self.calendar.finish()
-    return to_data_frame(lis)
-
-
+    if return_dataFrame:
+      return to_data_frame(lis)
+    else:
+      return group_return_dict
 
   def _check_constraints(self, teachers_name: list[str], subjects_name: list[str],
                          classrooms_name: list[str], groups_name: list[str]
@@ -549,7 +596,7 @@ class TimeTablingSolver(TimeTablingSolverBase):
       if not isinstance(count_to_be_equals, int):
         raise Exception(f"No es un numero es un {type(count_to_be_equals)}")
       self.model.add(s == count_to_be_equals)
-      if count_to_be_equals<0:
+      if count_to_be_equals < 0:
         raise AddNewConstraintException(f'count_to_be_equals has to be >= 0 and it s be {count_to_be_equals}')
     except Exception as e:
       raise Exception(f'El error en agregar restricciones opcionales: {str(e)}')

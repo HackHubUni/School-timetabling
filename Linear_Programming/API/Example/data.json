@@ -1,1 +1,192 @@
-{"subjects_name_list": ["Programacion", "ProgramacionCp", "Algebra", "AlgebraCP", "Analisis", "AnalisisCp", "Logica", "LogicaCp"], "dict_subjects_by_time": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}, "teachers_names": ["Piad", "Idania", "Celia", "Yudivian", "DanielL", "OmarLogica", "CarmentL", "ErnestoAnalisis", "CristinaA", "MercedesA", "DalianisAlgebra", "PepeAL", "CayetanaAL", "PacoP", "HectorP", "CarlaP"], "classrooms_names": ["1", "2", "3", "4", "5", "Postgrado"], "groups_names": ["C111", "C112", "C113", "C114", "C115", "C116"], "dict_group_subject_time": {"C111": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}, "C112": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}, "C113": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}, "C114": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}, "C115": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}, "C116": {"Programacion": 1, "ProgramacionCp": 2, "Algebra": 1, "AlgebraCP": 2, "Analisis": 1, "AnalisisCp": 2, "Logica": 1, "LogicaCp": 1}}, "shifts": [1, 2, 3], "days": [1, 2, 3, 4, 5], "dict_teachers_to_subjects": {"Piad": ["Programacion"], "Idania": ["Analisis"], "Celia": ["Algebra"], "Yudivian": ["Logica"], "DanielL": ["LogicaCp"], "OmarLogica": ["LogicaCp"], "CarmentL": ["LogicaCp"], "ErnestoAnalisis": ["AnalisisCp"], "CristinaA": ["AnalisisCp"], "MercedesA": ["AnalisisCp"], "DalianisAlgebra": ["AlgebraCP"], "PepeAL": ["AlgebraCP"], "CayetanaAL": ["AlgebraCP"], "PacoP": ["ProgramacionCp"], "HectorP": ["ProgramacionCp"], "CarlaP": ["ProgramacionCp"]}}
+{
+  "subjects_name_list": [
+    "Programacion",
+    "ProgramacionCp",
+    "Algebra",
+    "AlgebraCP",
+    "Analisis",
+    "AnalisisCp",
+    "Logica",
+    "LogicaCp",
+    "CompilacionCon",
+    "CompilacionCp",
+    "RedesCon",
+    "RedesCp",
+    "OptimizacionCon",
+    "OptimizacionCp",
+    "AICon",
+    "AICp"
+  ],
+  "dict_subjects_by_time": {
+    "Programacion": 1,
+    "ProgramacionCp": 2,
+    "Algebra": 1,
+    "AlgebraCP": 2,
+    "Analisis": 1,
+    "AnalisisCp": 2,
+    "Logica": 1,
+    "LogicaCp": 1,
+    "CompilacionCon": 1,
+    "CompilacionCp": 2,
+    "RedesCon": 1,
+    "RedesCp": 2,
+    "OptimizacionCon": 1,
+    "OptimizacionCp": 2,
+    "AICon": 1,
+    "AICp": 2
+  },
+  "teachers_names": [
+    "Piad",
+    "Idania",
+    "Celia",
+    "Yudivian",
+    "DanielL",
+    "OmarLogica",
+    "CarmentL",
+    "ErnestoAnalisis",
+    "CristinaA",
+    "MercedesA",
+    "DalianisAlgebra",
+    "PepeAL",
+    "CayetanaAL",
+    "PacoP",
+    "HectorP",
+    "CarlaP",
+    "JuanPabloCom",
+    "GustavoCom",
+    "LiaCom",
+    "DalmauRedesAI",
+    "AntonioRedes",
+    "GemaOPT",
+    "DanaOPT",
+    "ErnestoOPT",
+    "PedroAI"
+  ],
+  "classrooms_names": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "Postgrado"
+  ],
+  "groups_names": [
+    "C111"
+  ],
+  "dict_group_subject_time": {
+    "C111": {
+      "Programacion": 1,
+      "ProgramacionCp": 2,
+      "Algebra": 1,
+      "AlgebraCP": 2,
+      "Analisis": 1,
+      "AnalisisCp": 2,
+      "Logica": 1,
+      "LogicaCp": 1,
+
+    },
+    "C311": {
+
+      "CompilacionCon": 1,
+      "CompilacionCp": 2,
+      "RedesCon": 1,
+      "RedesCp": 2,
+      "OptimizacionCon": 1,
+      "OptimizacionCp": 2,
+      "AICon": 1,
+      "AICp": 2
+    }
+  },
+  "shifts": [
+    1,
+    2,
+    3
+  ],
+  "days": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "dict_teachers_to_subjects": {
+    "Piad": [
+      "Programacion",
+      "AICon"
+    ],
+    "Idania": [
+      "Analisis"
+    ],
+    "Celia": [
+      "Algebra"
+    ],
+    "Yudivian": [
+      "Logica"
+    ],
+    "DanielL": [
+      "LogicaCp"
+    ],
+    "OmarLogica": [
+      "LogicaCp"
+    ],
+    "CarmentL": [
+      "LogicaCp"
+    ],
+    "ErnestoAnalisis": [
+      "AnalisisCp"
+    ],
+    "CristinaA": [
+      "AnalisisCp"
+    ],
+    "MercedesA": [
+      "AnalisisCp"
+    ],
+    "DalianisAlgebra": [
+      "AlgebraCP"
+    ],
+    "PepeAL": [
+      "AlgebraCP"
+    ],
+    "CayetanaAL": [
+      "AlgebraCP"
+    ],
+    "PacoP": [
+      "ProgramacionCp"
+    ],
+    "HectorP": [
+      "ProgramacionCp"
+    ],
+    "CarlaP": [
+      "ProgramacionCp"
+    ],
+    "JuanPabloCom": [
+      "Programacion",
+      "CompilacionCon"
+    ],
+    "GustavoCom": [
+      "CompilacionCp"
+    ],
+    "LiaCom": [
+      "CompilacionCp"
+    ],
+    "DalmauRedesAI": [
+      "AICp",
+      "RedesCon"
+    ],
+    "AntonioRedes": [
+      "RedesCp"
+    ],
+    "GemaOPT": [
+      "OptimizacionCon"
+    ],
+    "DanaOPT": [
+      "OptimizacionCp"
+    ],
+    "ErnestoOPT": [
+      "OptimizacionCp"
+    ],
+    "PedroAI": [
+      "AICp"
+    ]
+  }
+}

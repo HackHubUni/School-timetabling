@@ -13,6 +13,7 @@ class Subjects(Enum):
   Logica = "Logica"
   LogicaCp = "LogicaCp"
 
+
   def __str__(self):
     return self.value
 
@@ -117,14 +118,29 @@ def main():
   }
 
   dict_teachers_to_subjects = {str(x):[str(y)for y in dict_teachers_to_subjects[x]] for x in dict_teachers_to_subjects.keys()}
+  nue="nueva"
+  profe_new="profeNuevo"
+  grupo_nuevo="GrupoNuevo"
+  count=1
+  subjects_name_list.append(nue)
+  dict_subjects_by_time[nue]=count
+  teachers_names.append(profe_new)
+  groups_names.append(grupo_nuevo)
+  ddd={}
+  ddd[nue]=count
+
+  dict_group_subject_time[grupo_nuevo]=ddd
+  dict_teachers_to_subjects[profe_new]=[nue]
+
+
 
   solver=TimeTablingSolver(subjects_name_list, dict_subjects_by_time, teachers_names, classrooms_names, groups_names,
          dict_group_subject_time, shifts, days, dict_teachers_to_subjects)
 
-  solver.add_optional_hard_constraints(teachers_names,[str(Subjects.Algebra)],classrooms_names,groups_names,shifts,[1],len(groups_names))
-  a=copy.deepcopy(subjects_name_list)
-  a.remove(str(Subjects.Algebra))
-  solver.add_False_hard_constraints(teachers_names,a,classrooms_names,groups_names,shifts,[1])
+ #solver.add_optional_hard_constraints(teachers_names,[str(Subjects.Algebra)],classrooms_names,groups_names,shifts,[1],len(groups_names))
+ #a=copy.deepcopy(subjects_name_list)
+ #a.remove(str(Subjects.Algebra))
+ #solver.add_False_hard_constraints(teachers_names,a,classrooms_names,groups_names,shifts,[1])
 
   df=solver.solve()
 
