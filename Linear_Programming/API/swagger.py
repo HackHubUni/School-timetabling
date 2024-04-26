@@ -1,17 +1,10 @@
-import os
-
-from flask_restx import Namespace, Resource, fields
-from API.schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
-  MaximizeSoftConstraintsSchema, MinimizeSoftConstraintsSchemaSchema
-from API.utils import serialize_solver, check_schema, deserialize
-from src.printer import send_excel
-from src.solver import TimeTablingSolver
+from flask_restx import Namespace
 
 import os
 import pickle
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from marshmallow import ValidationError
-from src.solver import TimeTablingSolver
+from API.solver import TimeTablingSolver
 from API.schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
   MaximizeSoftConstraintsSchema, MinimizeSoftConstraintsSchemaSchema
 from API.utils import serialize_solver, check_schema, deserialize

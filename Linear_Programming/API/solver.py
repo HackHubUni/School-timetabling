@@ -4,7 +4,7 @@ from ortools.sat.python.cp_model import CpModel
 from API.exceptions import LaunchingException, AddNewConstraintException
 from src.utils import Calendar
 from src.printer import to_data_frame
-from src.to_json import Group
+from API.to_json import Group
 
 
 class TimeTablingSolverBase:

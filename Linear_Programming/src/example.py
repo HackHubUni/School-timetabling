@@ -1,6 +1,6 @@
 import copy
 from enum import Enum
-from src.solver import TimeTablingSolver
+from API.solver import TimeTablingSolver
 from src.printer import to_excel
 
 class Subjects(Enum):
