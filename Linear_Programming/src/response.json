@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Grupo 1",
+    "calendar": {
+      "(1, 1)": {
+        "day": 1,
+        "shift": 1,
+        "teacher": "Profesor A",
+        "subject": "Materia A",
+        "classroom": "Aula 1"
+      },
+      "(2, 2)": {
+        "day": 2,
+        "shift": 2,
+        "teacher": "Profesor B",
+        "subject": "Materia B",
+        "classroom": "Aula 2"
+      }
+    }
+  },
+  {
+    "name": "Grupo 2",
+    "calendar": {
+      "(1, 1)": {
+        "day": 1,
+        "shift": 1,
+        "teacher": "Profesor C",
+        "subject": "Materia C",
+        "classroom": "Aula 3"
+      },
+      "(2, 2)": {
+        "day": 2,
+        "shift": 2,
+        "teacher": "Profesor D",
+        "subject": "Materia D",
+        "classroom": "Aula 4"
+      }
+    }
+  }
+]
