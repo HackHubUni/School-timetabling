@@ -37,6 +37,7 @@ con el sgt schema:
 
 como ejemplo de json de post es
 ````json
+{
 "subjects_name_list": [
     "Programacion",
     "ProgramacionCp",

@@ -2,12 +2,12 @@ import os
 import pickle
 from flask import Flask, request, jsonify
 from marshmallow import ValidationError
-from API.solver import TimeTablingSolver
-from API.schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
+from solver import TimeTablingSolver
+from schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
   MaximizeSoftConstraintsSchema, MinimizeSoftConstraintsSchemaSchema
-from API.serialize_utils import serialize_solver, check_schema, deserialize
-from API.printer import send_excel
-from API.to_json import groups_to_json
+from serialize_utils import serialize_solver, check_schema, deserialize
+from printer import send_excel
+from to_json import groups_to_json
 
 app = Flask(__name__)
 solver_schema = SolverSchema()

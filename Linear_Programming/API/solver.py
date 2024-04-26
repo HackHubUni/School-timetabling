@@ -1,10 +1,10 @@
 from ortools.constraint_solver.pywrapcp import IntVar
 from ortools.sat.python import cp_model
 from ortools.sat.python.cp_model import CpModel
-from API.exceptions import LaunchingException, AddNewConstraintException
-from src.utils import Calendar
-from src.printer import to_data_frame
-from API.to_json import Group
+from exceptions import LaunchingException, AddNewConstraintException
+from utils import Calendar
+from printer import to_data_frame
+from to_json import Group
 
 
 class TimeTablingSolverBase:
