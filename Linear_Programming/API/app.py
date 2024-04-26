@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 from src.solver import TimeTablingSolver
 from API.schema import SolverSchema, OptionalHardConstraints, TrueHardConstraints, FalseHardConstraints, \
   MaximizeSoftConstraintsSchema, MinimizeSoftConstraintsSchemaSchema
-from API.utils import serialize_solver, check_schema, deserialize
+from API.serialize_utils import serialize_solver, check_schema, deserialize
 from src.printer import send_excel
 from src.to_json import groups_to_json
 
