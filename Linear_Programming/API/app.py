@@ -12,6 +12,22 @@ from to_json import groups_to_json
 app = Flask(__name__)
 solver_schema = SolverSchema()
 
+#region === Adding Swagger ===
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL="/swagger"
+# API_URL="/static/swagger.json"
+API_URL="/static/swagger.yaml"
+
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': 'Access API'
+    }
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+#endregion === Adding Swagger ===
 
 # Aca se llama para crear un horario con las restricciones básicas
 @app.route('/solver', methods=['POST'])

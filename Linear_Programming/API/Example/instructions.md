@@ -890,8 +890,6 @@ con un json asi
   "groups_name": ["C311"],
   "shifts_int": [1, 2, 3],
   "days_int": [5]
-
-
 }
 ````
 
@@ -942,7 +940,6 @@ este es el json a llenar
   "shifts_int": [ 2 ],
   "days_int": [1],
   "alpha_value":50
-
 }
 ````
 

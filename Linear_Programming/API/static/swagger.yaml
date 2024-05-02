@@ -1,0 +1,227 @@
+openapi: 3.0.0
+info:
+  title: Time Tabling API
+  version: 1.0.0
+  description: API for creating and managing time tabling solutions with various constraints.
+paths:
+  /solver:
+    post:
+      summary: Create a time tabling solver instance with basic constraints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolverSchema'
+      responses:
+        '201':
+          description: Solver instance created successfully
+        '400':
+          description: Validation error
+  /dataframe:
+    get:
+      summary: Retrieve the dataframe of the created time tabling solution
+      responses:
+        '200':
+          description: Time tabling solution dataframe
+        '404':
+          description: Solver instance not found
+  /solver/schema:
+    get:
+      summary: Get the schema for setting solver data
+      responses:
+        '200':
+          description: Schema fields
+  /solver/optional_hard_constrains_schema:
+    get:
+      summary: Get the schema for optional hard constraints
+      responses:
+        '200':
+          description: Schema fields
+  /solver/true_hard_constrains_schema:
+    get:
+      summary: Get the schema for true hard constraints
+      responses:
+        '200':
+          description: Schema fields
+  /solver/false_hard_constrains_schema:
+    get:
+      summary: Get the schema for false hard constraints
+      responses:
+        '200':
+          description: Schema fields
+  /solver/maximize_soft_constrains_schema:
+    get:
+      summary: Get the schema for maximize soft constraints
+      responses:
+        '200':
+          description: Schema fields
+  /solver/minimize_soft_constrains_schema:
+    get:
+      summary: Get the schema for minimize soft constraints
+      responses:
+        '200':
+          description: Schema fields
+  /download_excel:
+    get:
+      summary: Download the time tabling solution in Excel format
+      responses:
+        '200':
+          description: Excel file
+  /get_json:
+    get:
+      summary: Get the time tabling solution in JSON format
+      responses:
+        '200':
+          description: JSON data
+  /solver/add_hard_optional_constraints:
+    post:
+      summary: Add optional hard constraints to the solver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OptionalHardConstraints'
+      responses:
+        '201':
+          description: Hard optional constraints added
+  /solver/TrueHardConstraints:
+    post:
+      summary: Add true hard constraints to the solver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrueHardConstraints'
+      responses:
+        '201':
+          description: Hard constraints added
+  /solver/FalseHardConstraints:
+    post:
+      summary: Add false hard constraints to the solver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FalseHardConstraints'
+      responses:
+        '201':
+          description: Hard constraints added
+  /solver/MaximizeSoftConstraints:
+    post:
+      summary: Add maximize soft constraints to the solver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaximizeSoftConstraintsSchema'
+      responses:
+        '201':
+          description: Soft constraints added
+  /solver/MinimizeSoftConstraints:
+    post:
+      summary: Add minimize soft constraints to the solver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MinimizeSoftConstraintsSchemaSchema'
+      responses:
+        '201':
+          description: Soft constraints added
+components:
+  schemas:
+    SolverSchema:
+      type: object
+      properties:
+        subjects_name_list:
+          type: array
+          items:
+            type: string
+        dict_subjects_by_time:
+          type: object
+          additionalProperties:
+            type: integer
+        teachers_names:
+          type: array
+          items:
+            type: string
+        classrooms_names:
+          type: array
+          items:
+            type: string
+        groups_names:
+          type: array
+          items:
+            type: string
+        dict_group_subject_time:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: integer
+        shifts:
+          type: array
+          items:
+            type: integer
+        days:
+          type: array
+          items:
+            type: integer
+        dict_teachers_to_subjects:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    OptionalHardConstraints:
+      allOf:
+        - $ref: '#/components/schemas/AddBooleanHardConstraintsBase'
+        - type: object
+          properties:
+            count_to_be_equals:
+              type: integer
+    TrueHardConstraints:
+      allOf:
+        - $ref: '#/components/schemas/AddBooleanHardConstraintsBase'
+    FalseHardConstraints:
+      allOf:
+        - $ref: '#/components/schemas/AddBooleanHardConstraintsBase'
+    MaximizeSoftConstraintsSchema:
+      allOf:
+        - $ref: '#/components/schemas/SoftConstraintsSchema'
+    MinimizeSoftConstraintsSchemaSchema:
+      allOf:
+        - $ref: '#/components/schemas/SoftConstraintsSchema'
+    AddBooleanHardConstraintsBase:
+      type: object
+      properties:
+        teachers_name:
+          type: array
+          items:
+            type: string
+        subjects_name:
+          type: array
+          items:
+            type: string
+        classrooms_name:
+          type: array
+          items:
+            type: string
+        groups_name:
+          type: array
+          items:
+            type: string
+        shifts_int:
+          type: array
+          items:
+            type: integer
+        days_int:
+          type: array
+          items:
+            type: integer
